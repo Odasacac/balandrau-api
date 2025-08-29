@@ -26,6 +26,7 @@ public class Habitaciones implements Serializable
 	private String nombre;
 	private String descripcion;
 	private int numeroDeHabitacion;
+	private int tipoHabitacion;
 	private int numeroMaximoDeHuespedes;
 	private BigDecimal precioPorNoche;
 	
@@ -105,8 +106,17 @@ public class Habitaciones implements Serializable
 	public void setPrecioPorNoche(BigDecimal precioPorNoche) 
 	{
 		this.precioPorNoche = precioPorNoche;
+	}
+
+	public int getTipoHabitacion() 
+	{
+		return tipoHabitacion;
+	}
+
+	public void setTipoHabitacion(int tipoHabitacion) 
+	{
+		this.tipoHabitacion = tipoHabitacion;
 	}	
-	
 	
 	
 	
