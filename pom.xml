@@ -42,7 +42,7 @@
 		</dependency>
 		
 		
-		<!-- Dependencias anyadidas -->
+		<!-- Dependencias adicionales -->
 		
 		<!-- JPA -->
 		<dependency>
@@ -56,7 +56,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- MySQL Connector-->
+		<!-- Driver JDBC para MySQL-->
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
