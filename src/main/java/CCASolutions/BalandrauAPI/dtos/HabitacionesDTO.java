@@ -1,3 +1,5 @@
 package CCASolutions.BalandrauAPI.dtos;
 
-public record HabitacionesDTO(String nombre, String descripcion) {}
+import java.math.BigDecimal;
+
+public record HabitacionesDTO(String nombre, String descripcion, BigDecimal precio) {}

@@ -1,6 +1,7 @@
 package CCASolutions.BalandrauAPI.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class Habitaciones implements Serializable
 	private String descripcion;
 	private int numeroDeHabitacion;
 	private int numeroMaximoDeHuespedes;
+	private BigDecimal precioPorNoche;
 	
 	@OneToMany (mappedBy = "habitacion")
 	private List<Reservas> reservas = new ArrayList<Reservas>();
@@ -93,7 +95,19 @@ public class Habitaciones implements Serializable
 	public void setReservas(List<Reservas> reservas) 
 	{
 		this.reservas = reservas;
+	}
+
+	public BigDecimal getPrecioPorNoche() 
+	{
+		return precioPorNoche;
+	}
+
+	public void setPrecioPorNoche(BigDecimal precioPorNoche) 
+	{
+		this.precioPorNoche = precioPorNoche;
 	}	
+	
+	
 	
 	
 	

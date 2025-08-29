@@ -1,6 +1,7 @@
 package CCASolutions.BalandrauAPI.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
@@ -30,6 +31,8 @@ public class Reservas implements Serializable
 	private LocalDate fechaSalida;
 	
 	private int numeroHuespedes;
+	
+	private BigDecimal precioTotal;
 	
 	@ManyToOne
 	@JoinColumn(name="cliente_id")
@@ -100,6 +103,18 @@ public class Reservas implements Serializable
 	{
 		return serialVersionUID;
 	}
+
+	public BigDecimal getPrecioTotal() 
+	{
+		return precioTotal;
+	}
+
+	public void setPrecioTotal(BigDecimal precioTotal) 
+	{
+		this.precioTotal = precioTotal;
+	}
+	
+	
 
 	
 	
