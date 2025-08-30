@@ -33,8 +33,6 @@ public class Habitaciones implements Serializable
 	@OneToMany (mappedBy = "habitacion")
 	private List<Reservas> reservas = new ArrayList<Reservas>();
 	
-	@OneToMany(mappedBy = "habitacion")
-	private List <RegimenComidas> regimenComidas = new ArrayList<>();
 	
 	public long getId() 
 	{
@@ -121,17 +119,6 @@ public class Habitaciones implements Serializable
 		this.tipoHabitacion = tipoHabitacion;
 	}
 
-	public List<RegimenComidas> getRegimenComidas() 
-	{
-		return regimenComidas;
-	}
-
-	public void setRegimenComidas(List<RegimenComidas> regimenComidas) 
-	{
-		this.regimenComidas = regimenComidas;
-	}	
-	
-	
 	
 	
 	

@@ -31,13 +31,11 @@ public class Reservas implements Serializable
 	private Habitaciones habitacion;
 	
 	private LocalDate fechaEntrada;
-	private LocalDate fechaSalida;
-	
-	private int numeroHuespedes;
-	
-	private BigDecimal precioTotal;
-	
+	private LocalDate fechaSalida;	
+	private int numeroHuespedes;	
+	private BigDecimal precioTotal;	
 	private String comentarios;
+	private boolean regimenDeComidas;
 	
 	@ManyToOne
 	@JoinColumn(name="cliente_id")
@@ -142,5 +140,16 @@ public class Reservas implements Serializable
 		this.comentarios = comentarios;
 	}
 		
+
+	public boolean isRegimenDeComidas() 
+	{
+		return regimenDeComidas;
+	}
+
+	public void setRegimenDeComidas(boolean regimenDeComidas) 
+	{
+		this.regimenDeComidas = regimenDeComidas;
+	}
+	
 	
 }
