@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="clientes")
-public class Clientes implements Serializable 
+public class ClientesEntity implements Serializable 
 {
 
 	private static final long serialVersionUID = 6521759965322384298L;
@@ -33,7 +33,7 @@ public class Clientes implements Serializable
 	private LocalDate fechaNacimiento;
 	
 	@OneToMany(mappedBy="cliente")
-	private List<Reservas> reservas = new ArrayList<Reservas>();
+	private List<ReservasEntity> reservas = new ArrayList<ReservasEntity>();
 
 	
 	public long getId() 
@@ -106,12 +106,12 @@ public class Clientes implements Serializable
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	public List<Reservas> getReservas() 
+	public List<ReservasEntity> getReservas() 
 	{
 		return reservas;
 	}
 
-	public void setReservas(List<Reservas> reservas) 
+	public void setReservas(List<ReservasEntity> reservas) 
 	{
 		this.reservas = reservas;
 	}

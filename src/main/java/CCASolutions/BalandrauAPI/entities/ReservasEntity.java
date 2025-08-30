@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="reservas")
-public class Reservas implements Serializable 
+public class ReservasEntity implements Serializable 
 {
 
 	private static final long serialVersionUID = -8859903864529687712L;
@@ -28,21 +28,21 @@ public class Reservas implements Serializable
 	
 	@ManyToOne
 	@JoinColumn(name = "habitacion_id")
-	private Habitaciones habitacion;
+	private HabitacionesEntity habitacion;
 	
 	private LocalDate fechaEntrada;
 	private LocalDate fechaSalida;	
 	private int numeroHuespedes;	
 	private BigDecimal precioTotal;	
 	private String comentarios;
-	private boolean regimenDeComidas;
+	private boolean hayComidas;
 	
 	@ManyToOne
 	@JoinColumn(name="cliente_id")
-	private Clientes cliente;
+	private ClientesEntity cliente;
 	
 	@OneToMany (mappedBy="reserva")
-	private List<RegimenComidas> regimenComidas = new ArrayList<>();
+	private List<RegimenComidasEntity> regimenComidas = new ArrayList<>();
 
 	
 	public long getId() 
@@ -55,12 +55,12 @@ public class Reservas implements Serializable
 		this.id = id;
 	}
 
-	public Habitaciones getHabitacion() 
+	public HabitacionesEntity getHabitacion() 
 	{
 		return habitacion;
 	}
 
-	public void setHabitacion(Habitaciones habitacion) 
+	public void setHabitacion(HabitacionesEntity habitacion) 
 	{
 		this.habitacion = habitacion;
 	}
@@ -95,12 +95,12 @@ public class Reservas implements Serializable
 		this.numeroHuespedes = numeroHuespedes;
 	}
 
-	public Clientes getCliente() 
+	public ClientesEntity getCliente() 
 	{
 		return cliente;
 	}
 
-	public void setCliente(Clientes cliente) 
+	public void setCliente(ClientesEntity cliente) 
 	{
 		this.cliente = cliente;
 	}
@@ -120,12 +120,12 @@ public class Reservas implements Serializable
 		this.precioTotal = precioTotal;
 	}
 
-	public List<RegimenComidas> getRegimenComidas() 
+	public List<RegimenComidasEntity> getRegimenComidas() 
 	{
 		return regimenComidas;
 	}
 
-	public void setRegimenComidas(List<RegimenComidas> regimenComidas) 
+	public void setRegimenComidas(List<RegimenComidasEntity> regimenComidas) 
 	{
 		this.regimenComidas = regimenComidas;
 	}
@@ -139,17 +139,17 @@ public class Reservas implements Serializable
 	{
 		this.comentarios = comentarios;
 	}
+
+	public boolean isHayComidas() 
+	{
+		return hayComidas;
+	}
+
+	public void setHayComidas(boolean hayComidas) 
+	{
+		this.hayComidas = hayComidas;
+	}
 		
 
-	public boolean isRegimenDeComidas() 
-	{
-		return regimenDeComidas;
-	}
-
-	public void setRegimenDeComidas(boolean regimenDeComidas) 
-	{
-		this.regimenDeComidas = regimenDeComidas;
-	}
-	
 	
 }

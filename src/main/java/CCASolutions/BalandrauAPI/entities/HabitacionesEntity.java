@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="habitaciones")
-public class Habitaciones implements Serializable
+public class HabitacionesEntity implements Serializable
 {
 
 	private static final long serialVersionUID = 8655749167143720759L;
@@ -31,7 +31,7 @@ public class Habitaciones implements Serializable
 	private BigDecimal precioPorNoche;
 	
 	@OneToMany (mappedBy = "habitacion")
-	private List<Reservas> reservas = new ArrayList<Reservas>();
+	private List<ReservasEntity> reservas = new ArrayList<ReservasEntity>();
 	
 	
 	public long getId() 
@@ -89,12 +89,12 @@ public class Habitaciones implements Serializable
 		return serialVersionUID;
 	}
 
-	public List<Reservas> getReservas() 
+	public List<ReservasEntity> getReservas() 
 	{
 		return reservas;
 	}
 
-	public void setReservas(List<Reservas> reservas) 
+	public void setReservas(List<ReservasEntity> reservas) 
 	{
 		this.reservas = reservas;
 	}

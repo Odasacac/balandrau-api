@@ -12,8 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="cocina")
-public class RegimenComidas implements Serializable
+@Table(name="RegimenComidas")
+public class RegimenComidasEntity implements Serializable
 {
 
 	private static final long serialVersionUID = -60186433391184311L;
@@ -24,9 +24,12 @@ public class RegimenComidas implements Serializable
 	
 	@ManyToOne
 	@JoinColumn(name="reserva_id")
-	private Reservas reserva;
+	private ReservasEntity reserva;
 	
-	private LocalDate fecha;	
+	private LocalDate fecha;
+	private boolean desayuno;
+	private boolean almuerzo;
+	private boolean cena;
 	private String alergias;
 	private boolean picnic;
 	
@@ -40,12 +43,12 @@ public class RegimenComidas implements Serializable
 		this.id = id;
 	}
 	
-	public Reservas getReserva() 
+	public ReservasEntity getReserva() 
 	{
 		return reserva;
 	}
 	
-	public void setReserva(Reservas reserva)
+	public void setReserva(ReservasEntity reserva)
 	{
 		this.reserva = reserva;
 	}
@@ -83,6 +86,36 @@ public class RegimenComidas implements Serializable
 	public static long getSerialversionuid() 
 	{
 		return serialVersionUID;
+	}
+
+	public boolean isDesayuno() 
+	{
+		return desayuno;
+	}
+
+	public void setDesayuno(boolean desayuno) 
+	{
+		this.desayuno = desayuno;
+	}
+
+	public boolean isAlmuerzo() 
+	{
+		return almuerzo;
+	}
+
+	public void setAlmuerzo(boolean almuerzo) 
+	{
+		this.almuerzo = almuerzo;
+	}
+
+	public boolean isCena() 
+	{
+		return cena;
+	}
+
+	public void setCena(boolean cena) 
+	{
+		this.cena = cena;
 	}
 	
 	

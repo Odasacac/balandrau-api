@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dtos.HabitacionesDTO;
+import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacionesDTO;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 
@@ -39,15 +40,30 @@ public class HabitacionesServiceImpl implements HabitacionesService
 			String nombre = (String) habitacion[0];
 			String descripcion = (String) habitacion[1];
 			BigDecimal precioPorNoche = (BigDecimal) habitacion[2];
+			Long habitacionId = (Long) habitacion[3];
 		    
 			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
 		    
-			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal);
+			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionId);
 			
 			habitacionesDisponiblesDTO.add(habitacionDTO); 		
 		}
 		
 		return habitacionesDisponiblesDTO;
+	}
+	
+	public boolean habitacionDisponible(RequestHabitacion requestHabitacion)
+	{		
+		boolean habitacionDisponible = false;
+		
+		Integer habitacion = this.habitacionesDao.habitacionDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes(), requestHabitacion.habitacionId());
+		
+		if (habitacion != null)
+		{
+			habitacionDisponible = true;
+		}
+		
+		return habitacionDisponible;
 	}
 
 }

@@ -2,4 +2,4 @@ package CCASolutions.BalandrauAPI.dtos;
 
 import java.math.BigDecimal;
 
-public record HabitacionesDTO(String nombre, String descripcion, BigDecimal precioPorNoche) {}
+public record HabitacionesDTO(String nombre, String descripcion, BigDecimal precioPorNoche, Long habitacionId) {}
