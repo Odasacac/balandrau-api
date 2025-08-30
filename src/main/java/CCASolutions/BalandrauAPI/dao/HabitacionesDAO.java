@@ -11,6 +11,6 @@ import CCASolutions.BalandrauAPI.entities.Habitaciones;
 
 public interface HabitacionesDAO extends JpaRepository <Habitaciones, Long>
 {
-	@Query("SELECT h FROM Habitaciones h WHERE :numeroHuespedes <= h.numeroMaximoDeHuespedes AND h.id NOT IN (SELECT r.habitacion.id FROM Reservas r WHERE r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada)")
-	public abstract List<Habitaciones> getHabitacionesDisponiblesPorFechaYHuespedes(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param ("numeroHuespedes") int numeroHuespedes);
+	@Query("SELECT h.nombre, h.descripcion, h.precioPorNoche FROM Habitaciones h WHERE :numeroHuespedes <= h.numeroMaximoDeHuespedes AND h.id NOT IN (SELECT r.habitacion.id FROM Reservas r WHERE r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada)")
+	public abstract List<Object[]> getHabitacionesDisponiblesPorFechaYHuespedes(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param ("numeroHuespedes") int numeroHuespedes);
 }

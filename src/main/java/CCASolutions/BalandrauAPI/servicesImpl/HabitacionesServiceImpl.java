@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dtos.HabitacionesDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacionesDTO;
-import CCASolutions.BalandrauAPI.entities.Habitaciones;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 
 
@@ -27,7 +26,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		LocalDate fechaEntrada = requestHabitaciones.fechaEntrada();
 		LocalDate fechaSalida = requestHabitaciones.fechaSalida();
 		
-		List<Habitaciones> habitacionesDisponibles = this.habitacionesDao.getHabitacionesDisponiblesPorFechaYHuespedes(fechaEntrada, fechaSalida, requestHabitaciones.numeroHuespedes());
+		List<Object[]> habitacionesDisponibles = this.habitacionesDao.getHabitacionesDisponiblesPorFechaYHuespedes(fechaEntrada, fechaSalida, requestHabitaciones.numeroHuespedes());
 		
 		long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
 		
@@ -35,12 +34,17 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		
 		for (int i = 0; i < habitacionesDisponibles.size(); i++)
 		{
-			Habitaciones habitacion = habitacionesDisponibles.get(i);
-			BigDecimal precioTotal = habitacion.getPrecioPorNoche().multiply(BigDecimal.valueOf(noches));
+			Object[] habitacion = habitacionesDisponibles.get(i);
+
+			String nombre = (String) habitacion[0];
+			String descripcion = (String) habitacion[1];
+			BigDecimal precioPorNoche = (BigDecimal) habitacion[2];
+		    
+			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+		    
+			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal);
 			
-			HabitacionesDTO habitacionDTO = new HabitacionesDTO(habitacion.getNombre(), habitacion.getDescripcion(), precioTotal);
-			
-			habitacionesDisponiblesDTO.add(habitacionDTO);			
+			habitacionesDisponiblesDTO.add(habitacionDTO); 		
 		}
 		
 		return habitacionesDisponiblesDTO;

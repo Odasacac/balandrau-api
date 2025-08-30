@@ -31,6 +31,12 @@ public class HabitacionesController
 		HttpStatus status = HttpStatus.OK;
 		List<HabitacionesDTO> body = new ArrayList<HabitacionesDTO>();
 		
+		if (requestHabitaciones.fechaSalida().isBefore(requestHabitaciones.fechaEntrada()) || requestHabitaciones.fechaSalida().isEqual(requestHabitaciones.fechaEntrada()) || requestHabitaciones.numeroHuespedes() < 1)
+		{
+			status = HttpStatus.BAD_REQUEST;
+			return new ResponseEntity<List<HabitacionesDTO>>(body, status);
+		}
+		
 		try
 		{
 			body = this.habitacionesService.getHabitacionesDisponiblesPorFechaYHuespedes(requestHabitaciones);
@@ -38,6 +44,7 @@ public class HabitacionesController
 		catch (Exception e)
 		{
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			System.out.println(e);
 		}
 		
 		return new ResponseEntity<List<HabitacionesDTO>>(body, status);

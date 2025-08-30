@@ -3,6 +3,8 @@ package CCASolutions.BalandrauAPI.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,9 +37,14 @@ public class Reservas implements Serializable
 	
 	private BigDecimal precioTotal;
 	
+	private String comentarios;
+	
 	@ManyToOne
 	@JoinColumn(name="cliente_id")
 	private Clientes cliente;
+	
+	@OneToMany (mappedBy="reserva")
+	private List<RegimenComidas> regimenComidas = new ArrayList<>();
 
 	
 	public long getId() 
@@ -113,9 +121,26 @@ public class Reservas implements Serializable
 	{
 		this.precioTotal = precioTotal;
 	}
-	
-	
 
-	
+	public List<RegimenComidas> getRegimenComidas() 
+	{
+		return regimenComidas;
+	}
+
+	public void setRegimenComidas(List<RegimenComidas> regimenComidas) 
+	{
+		this.regimenComidas = regimenComidas;
+	}
+
+	public String getComentarios() 
+	{
+		return comentarios;
+	}
+
+	public void setComentarios(String comentarios) 
+	{
+		this.comentarios = comentarios;
+	}
+		
 	
 }
