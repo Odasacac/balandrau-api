@@ -27,6 +27,8 @@ public class Clientes implements Serializable
 	private String apellido1;
 	private String apellido2;
 	private String dni;
+	private String email;
+	private String password;
 	private boolean esCampista;
 	private LocalDate fechaNacimiento;
 	
@@ -118,6 +120,27 @@ public class Clientes implements Serializable
 	{
 		return serialVersionUID;
 	}
+
+	public String getEmail() 
+	{
+		return email;
+	}
+
+	public void setEmail(String email) 
+	{
+		this.email = email;
+	}
+
+	public String getPassword() 
+	{
+		return password;
+	}
+
+	public void setPassword(String password) 
+	{
+		this.password = password;
+	}
+	
 	
 	
 
