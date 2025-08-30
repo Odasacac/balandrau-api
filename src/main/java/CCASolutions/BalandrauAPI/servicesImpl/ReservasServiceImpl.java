@@ -51,7 +51,7 @@ public class ReservasServiceImpl implements ReservasService
 				
 				if (!requestReserva.comidas().isEmpty()) 
 				{
-					guardarRegimen(reservaGuardadaId, requestReserva.comidas());
+					guardarRegimen(reservaGuardadaId, requestReserva.comidas(), requestReserva.alergias());
 				}
 				
 				resultado = "Reserva guardada con éxito.";
@@ -113,13 +113,13 @@ public class ReservasServiceImpl implements ReservasService
 	
 	}
 	
-	private void guardarRegimen(Long reservaGuardadaId, List<RegimenComidasEntity> comidas)
+	private void guardarRegimen(Long reservaGuardadaId, List<RegimenComidasEntity> comidas, String alergias)
 	{
 		for (int i = 0; i<comidas.size(); i++)
 		{
 			try
 			{
-				this.regimenComidasService.guardarNuevoRegimen(comidas.get(i), reservaGuardadaId);
+				this.regimenComidasService.guardarNuevoRegimen(comidas.get(i), reservaGuardadaId, alergias);
 			}
 			catch (Exception e)
 			{

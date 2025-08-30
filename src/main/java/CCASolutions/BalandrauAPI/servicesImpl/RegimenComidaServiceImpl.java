@@ -14,11 +14,12 @@ public class RegimenComidaServiceImpl implements RegimenComidasService
 	@Autowired
 	private RegimenComidasDAO regimenComidasDao;
 	
-	public void guardarNuevoRegimen(RegimenComidasEntity regimen, Long reservaId)
+	public void guardarNuevoRegimen(RegimenComidasEntity regimen, Long reservaId, String alergias)
 	{
 		ReservasEntity reservaParaId = new ReservasEntity();
 		reservaParaId.setId(reservaId);		
 		regimen.setReserva(reservaParaId);
+		regimen.setAlergias(alergias);
 		
 		this.regimenComidasDao.save(regimen);
 	}
