@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="RegimenComidas")
+@Table(name="regimen_de_comidas")
 public class RegimenComidasEntity implements Serializable
 {
 

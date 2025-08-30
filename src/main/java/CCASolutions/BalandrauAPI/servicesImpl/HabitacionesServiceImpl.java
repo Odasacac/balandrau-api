@@ -1,6 +1,7 @@
 package CCASolutions.BalandrauAPI.servicesImpl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import CCASolutions.BalandrauAPI.dao.DatosDAO;
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dtos.HabitacionesDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
@@ -21,6 +23,9 @@ public class HabitacionesServiceImpl implements HabitacionesService
 {
 	@Autowired
 	private HabitacionesDAO habitacionesDao;
+	
+	@Autowired
+	private DatosDAO datosDao;
 	
 	public List<HabitacionesDTO> getHabitacionesDisponiblesPorFechaYHuespedes(RequestHabitacionesDTO requestHabitaciones)
 	{
@@ -43,6 +48,15 @@ public class HabitacionesServiceImpl implements HabitacionesService
 			Long habitacionId = (Long) habitacion[3];
 		    
 			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+			
+			if(requestHabitaciones.esCampista())
+			{
+				int descuentoInt = this.datosDao.getPorCientoDeDescuentoPorCampista();
+				
+				BigDecimal descuento = new BigDecimal(descuentoInt).divide(new BigDecimal("100"));
+
+				precioTotal = precioTotal.subtract(precioTotal.multiply(descuento)).setScale(2, RoundingMode.HALF_UP);
+			}
 		    
 			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionId);
 			
