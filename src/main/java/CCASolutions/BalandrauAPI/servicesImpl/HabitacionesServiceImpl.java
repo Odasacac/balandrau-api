@@ -5,7 +5,9 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dtos.HabitacionesDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacionesDTO;
+import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
+import CCASolutions.BalandrauAPI.interfaces.IHabitacionComunitaria;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 
 
@@ -30,109 +34,40 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	public List<HabitacionesDTO> getHabitacionesDisponiblesPorFechaYHuespedes(RequestHabitacionesDTO requestHabitaciones)
 	{
 		LocalDate fechaEntrada = requestHabitaciones.fechaEntrada();
-		LocalDate fechaSalida = requestHabitaciones.fechaSalida();
-		
-		List<Object[]> habitacionesPrivadasDisponibles = this.habitacionesDao.getHabitacionesPrivadasDisponiblesPorFechaYHuespedes(fechaEntrada, fechaSalida, requestHabitaciones.numeroHuespedes());
-		
-		List<Object[]> habitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
-		
-		long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
+		LocalDate fechaSalida = requestHabitaciones.fechaSalida();						
+		int numeroHuespedes = requestHabitaciones.numeroHuespedes();
+		boolean esCampista = requestHabitaciones.esCampista();
 		
 		List<HabitacionesDTO> habitacionesDisponiblesDTO = new ArrayList<HabitacionesDTO>();
 		
+		List<HabitacionesDTO> habitacionesPrivadasDisponibles = getHabitacionesPrivadasDisponibles(fechaEntrada, fechaSalida, numeroHuespedes, esCampista);
 		
-		
-		for (int i = 0; i < habitacionesPrivadasDisponibles.size(); i++)
+		if(!habitacionesPrivadasDisponibles.isEmpty())
 		{
-			Object[] habitacion = habitacionesPrivadasDisponibles.get(i);
-
-			String nombre = (String) habitacion[0];
-			String descripcion = (String) habitacion[1];
-			BigDecimal precioPorNoche = (BigDecimal) habitacion[2];
-			Long habitacionId = (Long) habitacion[3];
-		    
-			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
-			
-			if(requestHabitaciones.esCampista())
-			{
-				int descuentoInt = this.datosDao.getPorCientoDeDescuentoPorCampista();
-				
-				BigDecimal descuento = new BigDecimal(descuentoInt).divide(new BigDecimal("100"));
-
-				precioTotal = precioTotal.subtract(precioTotal.multiply(descuento)).setScale(2, RoundingMode.HALF_UP);
-			}
-		    
-			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionId);
-			
-			habitacionesDisponiblesDTO.add(habitacionDTO); 		
-		}
+			habitacionesDisponiblesDTO.addAll(habitacionesPrivadasDisponibles);
+		}		
 		
-		boolean disponibleHabitacionComunitaria = true;
+		HabitacionesDTO habitacionComunitariaDisponible = getHabitacionComunitariaCompletaIfDisponible(fechaEntrada, fechaSalida, numeroHuespedes, esCampista);
 		
-		for (int j=0; j<habitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
+		if(habitacionComunitariaDisponible != null)
 		{
-			Object[] registro = habitacionComunitariaPorFecha.get(j);
-			int numeroPersonasEsteDiaEnLaHabitacion = ((Number) registro[3]).intValue();
-			int numeroNuevosHuespedes = requestHabitaciones.numeroHuespedes();
-			int numeroMaximoHuespedesHabitacionComunitaria = ((Number) registro[4]).intValue();
-			
-			if(numeroPersonasEsteDiaEnLaHabitacion + numeroNuevosHuespedes > numeroMaximoHuespedesHabitacionComunitaria)
-			{
-				disponibleHabitacionComunitaria = false;
-			}
+			habitacionesDisponiblesDTO.add(habitacionComunitariaDisponible);
 		}
-		
-		
-		if(disponibleHabitacionComunitaria)
-		{
-			String nombre = (String) habitacionComunitariaPorFecha.get(0)[0];
-			String descripcion = (String) habitacionComunitariaPorFecha.get(0)[1];
-			BigDecimal precioPorNoche = (BigDecimal) habitacionComunitariaPorFecha.get(0)[2];
-			
-			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
-			
-			if(requestHabitaciones.esCampista())
-			{
-				int descuentoInt = this.datosDao.getPorCientoDeDescuentoPorCampista();
-				
-				BigDecimal descuento = new BigDecimal(descuentoInt).divide(new BigDecimal("100"));
-
-				precioTotal = precioTotal.subtract(precioTotal.multiply(descuento)).setScale(2, RoundingMode.HALF_UP);
-			}
-		    
-			
-			Integer habitacionIdInt = (Integer) habitacionComunitariaPorFecha.get(0)[3];
-			Long habitacionId = habitacionIdInt.longValue();
-			
-			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionId);			
-			habitacionesDisponiblesDTO.add(habitacionDTO); 	
-		}
-		
 		
 		return habitacionesDisponiblesDTO;
 	}
 	
 	public boolean habitacionDisponible(RequestHabitacion requestHabitacion)
 	{		
-		boolean habitacionDisponible = true;
+		boolean habitacionDisponible = true;		
 		
-		if(requestHabitacion.habitacionId() == 1)
+		if(requestHabitacion.habitacionId() == this.habitacionesDao.getHabitacionComunitariaId())
 		{
-			List<Object[]> habitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida());
-			
-			for (int j=0; j<habitacionComunitariaPorFecha.size() && habitacionDisponible; j++)
+			HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes());
+			if (habitacionComunitaria == null)
 			{
-				Object[] registro = habitacionComunitariaPorFecha.get(j);
-				int numeroPersonasEsteDiaEnLaHabitacion = ((Number) registro[3]).intValue();
-				int numeroNuevosHuespedes = requestHabitacion.numeroHuespedes();
-				int numeroMaximoHuespedesHabitacionComunitaria = ((Number) registro[4]).intValue();
-				
-				if (numeroPersonasEsteDiaEnLaHabitacion + numeroNuevosHuespedes > numeroMaximoHuespedesHabitacionComunitaria)
-				{
-					habitacionDisponible = false;
-				}
+				habitacionDisponible = false;
 			}
-			
 		}
 		else
 		{
@@ -146,5 +81,129 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		
 		return habitacionDisponible;
 	}
+	
+	
+	
+	private List<HabitacionesDTO> getHabitacionesPrivadasDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida, int numeroHuespedes, boolean esCampista)
+	{
+		
+		List<HabitacionesDTO> habitacionesPrivadasDisponiblesDTO = new ArrayList<HabitacionesDTO>();
+		long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
+		
+		List<HabitacionesEntity> habitacionesPrivadasDisponibles = this.habitacionesDao.getHabitacionesPrivadasDisponiblesPorFechaYHuespedes(fechaEntrada, fechaSalida, numeroHuespedes);
+		
+		for (int i = 0; i < habitacionesPrivadasDisponibles.size(); i++)
+		{
+			HabitacionesEntity habitacion = habitacionesPrivadasDisponibles.get(i);
+
+			String nombre = habitacion.getNombre();
+			String descripcion = habitacion.getDescripcion();
+			BigDecimal precioPorNoche = habitacion.getPrecioPorNoche();
+			Long habitacionId = habitacion.getId();
+		    
+			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+			
+			precioTotal = aplicarDescuentoCampista(precioTotal, esCampista);		    
+						
+			HabitacionesDTO habitacionDTO = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionId);
+			
+			habitacionesPrivadasDisponiblesDTO.add(habitacionDTO); 		
+		}
+		
+		return habitacionesPrivadasDisponiblesDTO;
+	}
+	
+	private HabitacionesDTO getHabitacionComunitariaCompletaIfDisponible(LocalDate fechaEntrada, LocalDate fechaSalida, int numeroHuespedes, boolean esCampista)
+	{
+		HabitacionesDTO habitacionComunitariaCompleta;
+		
+		HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(fechaEntrada, fechaSalida, numeroHuespedes);
+		
+		if(habitacionComunitaria != null)
+		{
+			String nombre = habitacionComunitaria.getNombre();
+			String descripcion = habitacionComunitaria.getDescripcion();
+			BigDecimal precioPorNoche = habitacionComunitaria.getPrecioPorNoche();
+			
+			long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
+			BigDecimal precioTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+			
+			precioTotal = aplicarDescuentoCampista(precioTotal, esCampista);
+	
+			Long habitacionComunitariaId = habitacionComunitaria.getId();
+			
+			habitacionComunitariaCompleta = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionComunitariaId);			
+				
+		}
+		else
+		{
+			habitacionComunitariaCompleta = null;
+		}
+		
+		return habitacionComunitariaCompleta;
+		
+	}
+	
+	private HabitacionesEntity getHabitacionComunitariaIfDisponible(LocalDate fechaEntrada, LocalDate fechaSalida, int numeroNuevosHuespedes)
+	{	
+		HabitacionesEntity habitacionComunitaria = new HabitacionesEntity();
+		boolean disponibleHabitacionComunitaria = true;		
+		Map<LocalDate, Integer> ocupacionPorDia = new HashMap<>();
+		List<IHabitacionComunitaria> habitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
+		
+		for (int j=0; j<habitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
+		{			
+			IHabitacionComunitaria reserva = habitacionComunitariaPorFecha.get(j);
+			
+			LocalDate inicio = reserva.getFechaEntrada();
+			LocalDate fin = reserva.getFechaSalida();
+			int numeroHuespedesReserva = reserva.getNumeroHuespedes();
+			int numeroMaximoHuespedes = reserva.getNumeroMaximoDeHuespedes();
+			
+			for (LocalDate d = inicio; !d.isAfter(fin.minusDays(1)) && disponibleHabitacionComunitaria; d = d.plusDays(1)) 
+			{
+				int ocupacionActual = ocupacionPorDia.getOrDefault(d, 0);
+
+				if (ocupacionActual + numeroHuespedesReserva + numeroNuevosHuespedes > numeroMaximoHuespedes) 
+				{
+					disponibleHabitacionComunitaria = false;
+				}
+				else
+				{
+					ocupacionPorDia.put(d, ocupacionActual + numeroHuespedesReserva);
+				}		
+			}
+		}
+		
+		if (disponibleHabitacionComunitaria && !habitacionComunitariaPorFecha.isEmpty())
+		{
+			habitacionComunitaria.setNombre(habitacionComunitariaPorFecha.get(0).getNombre());
+			habitacionComunitaria.setDescripcion(habitacionComunitariaPorFecha.get(0).getDescripcion());
+			habitacionComunitaria.setPrecioPorNoche(habitacionComunitariaPorFecha.get(0).getPrecioPorNoche());
+			habitacionComunitaria.setId(habitacionComunitariaPorFecha.get(0).getId());
+		}
+		else
+		{
+			habitacionComunitaria = null;
+		}
+		
+		return habitacionComunitaria;
+	}
+	
+
+	private BigDecimal aplicarDescuentoCampista(BigDecimal precio, boolean esCampista) 
+	{
+		BigDecimal descuento = precio;
+		
+		if (esCampista)
+		{
+			int descuentoInt = this.datosDao.getPorCientoDeDescuentoPorCampista();
+			descuento = precio.multiply(BigDecimal.valueOf(1 - descuentoInt / 100.0)).setScale(2, RoundingMode.HALF_UP);
+		}
+		
+		return descuento;
+	}
+
+	
 
 }

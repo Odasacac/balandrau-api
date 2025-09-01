@@ -8,18 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
+import CCASolutions.BalandrauAPI.interfaces.IHabitacionComunitaria;
 
 
 
 public interface HabitacionesDAO extends JpaRepository <HabitacionesEntity, Long>
 {
-	@Query("SELECT h.nombre, h.descripcion, h.precioPorNoche, h.id FROM HabitacionesEntity h WHERE :numeroHuespedes <= h.numeroMaximoDeHuespedes AND h.id NOT IN (1) AND h.id NOT IN (SELECT r.habitacion.id FROM ReservasEntity r WHERE r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada)")
-	public abstract List<Object[]> getHabitacionesPrivadasDisponiblesPorFechaYHuespedes(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param ("numeroHuespedes") int numeroHuespedes);
+	@Query("SELECT h FROM HabitacionesEntity h LEFT JOIN ReservasEntity r ON r.habitacion = h AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada WHERE h.numeroMaximoDeHuespedes >= :numeroHuespedes AND h.id != 1 AND r.id IS NULL")
+	List<HabitacionesEntity> getHabitacionesPrivadasDisponiblesPorFechaYHuespedes(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes);
 
-	@Query("SELECT h.nombre, h.descripcion, h.precioPorNoche, r.numeroHuespedes, h.numeroMaximoDeHuespedes, r.fechaEntrada, r.fechaSalida FROM ReservasEntity r JOIN r.habitacion h WHERE h.id = 1 AND r.fechaEntrada <= :fechaSalida AND r.fechaSalida >= :fechaEntrada")
-	public abstract List<Object[]> getHabitacionComunitariaPorFecha(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida);
+	@Query("SELECT h.id, h.nombre, h.descripcion, h.precioPorNoche, r.numeroHuespedes, h.numeroMaximoDeHuespedes, r.fechaEntrada, r.fechaSalida FROM ReservasEntity r JOIN r.habitacion h WHERE h.id = 1 AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada")
+	public abstract List<IHabitacionComunitaria> getHabitacionComunitariaPorFecha(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida);
 
-	@Query("SELECT h.numeroDeHabitacion FROM HabitacionesEntity h WHERE :numeroHuespedes <= h.numeroMaximoDeHuespedes AND h.id = :habitacionId AND h.id NOT IN (SELECT r.habitacion.id FROM ReservasEntity r WHERE r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada)")
-	public abstract Integer habitacionDisponible (@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param ("numeroHuespedes") int numeroHuespedes, @Param ("habitacionId") long habitacionId);
-
+	@Query("SELECT h.numeroDeHabitacion FROM HabitacionesEntity h LEFT JOIN ReservasEntity r ON r.habitacion = h AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada WHERE h.numeroMaximoDeHuespedes >= :numeroHuespedes AND h.id = :habitacionId AND r.id IS NULL")
+	Integer habitacionDisponible(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes,	@Param("habitacionId") long habitacionId);
+	
+	@Query("SELECT h.id FROM HabitacionesEntity h WHERE h.TipoDeHabitacion = 1")
+	public abstract Long getHabitacionComunitariaId ();
 }
