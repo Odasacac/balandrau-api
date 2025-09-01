@@ -18,7 +18,6 @@ import CCASolutions.BalandrauAPI.dtos.HabitacionesDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacionesDTO;
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
-import CCASolutions.BalandrauAPI.interfaces.IHabitacionComunitaria;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 
 
@@ -149,16 +148,16 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		HabitacionesEntity habitacionComunitaria = new HabitacionesEntity();
 		boolean disponibleHabitacionComunitaria = true;		
 		Map<LocalDate, Integer> ocupacionPorDia = new HashMap<>();
-		List<IHabitacionComunitaria> habitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
+		List<Object[]> reservasHabitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
 		
-		for (int j=0; j<habitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
+		for (int j=0; j<reservasHabitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
 		{			
-			IHabitacionComunitaria reserva = habitacionComunitariaPorFecha.get(j);
+			Object[] reserva = reservasHabitacionComunitariaPorFecha.get(j);
 			
-			LocalDate inicio = reserva.getFechaEntrada();
-			LocalDate fin = reserva.getFechaSalida();
-			int numeroHuespedesReserva = reserva.getNumeroHuespedes();
-			int numeroMaximoHuespedes = reserva.getNumeroMaximoDeHuespedes();
+			LocalDate inicio = (LocalDate) reserva[6];
+			LocalDate fin = (LocalDate) reserva[7];
+			Integer numeroHuespedesReserva = (Integer) reserva[4];
+			Integer numeroMaximoHuespedes = (Integer) reserva[5];
 			
 			for (LocalDate d = inicio; !d.isAfter(fin.minusDays(1)) && disponibleHabitacionComunitaria; d = d.plusDays(1)) 
 			{
@@ -175,12 +174,14 @@ public class HabitacionesServiceImpl implements HabitacionesService
 			}
 		}
 		
-		if (disponibleHabitacionComunitaria && !habitacionComunitariaPorFecha.isEmpty())
+		if (disponibleHabitacionComunitaria && !reservasHabitacionComunitariaPorFecha.isEmpty())
 		{
-			habitacionComunitaria.setNombre(habitacionComunitariaPorFecha.get(0).getNombre());
-			habitacionComunitaria.setDescripcion(habitacionComunitariaPorFecha.get(0).getDescripcion());
-			habitacionComunitaria.setPrecioPorNoche(habitacionComunitariaPorFecha.get(0).getPrecioPorNoche());
-			habitacionComunitaria.setId(habitacionComunitariaPorFecha.get(0).getId());
+			Object[] primeraReserva = reservasHabitacionComunitariaPorFecha.get(0);
+			
+			habitacionComunitaria.setNombre((String) primeraReserva[1]);
+			habitacionComunitaria.setDescripcion((String) primeraReserva[2]);
+			habitacionComunitaria.setPrecioPorNoche((BigDecimal) primeraReserva[3]);
+			habitacionComunitaria.setId((Long) primeraReserva[0]);
 		}
 		else
 		{
