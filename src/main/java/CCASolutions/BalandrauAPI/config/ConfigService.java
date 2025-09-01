@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
@@ -20,7 +21,7 @@ import CCASolutions.BalandrauAPI.entities.DatosEntity;
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
 
 @Service
-public class ConfigService implements IConfigService 
+public class ConfigService implements IConfigService, CommandLineRunner
 {
 	@Autowired
 	private DatosDAO datosDao;
@@ -276,6 +277,12 @@ public class ConfigService implements IConfigService
 		}		
 		
 		return datosCargados;
+	}
+
+	@Override
+	public void run(String... args) throws Exception 
+	{		
+		cargarDatosIniciales();
 	}
 
 }
