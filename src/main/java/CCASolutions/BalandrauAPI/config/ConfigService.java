@@ -91,8 +91,12 @@ public class ConfigService implements IConfigService
 		else if (reservasDao.count() == 0)
 		{
 			hayDatos = false;
-		}		
-		
+		}
+		else if (clientesDao.count()==0)
+		{
+			hayDatos=false;
+		}
+
 		return hayDatos;
 	}
 	
@@ -116,6 +120,11 @@ public class ConfigService implements IConfigService
 		catch (Exception e)
 		{
 			entidadesVacias = false;
+		}
+		
+		if(hayDatosEnLaBaseDeDatos())
+		{
+			entidadesVacias=false;
 		}
 		
 		
