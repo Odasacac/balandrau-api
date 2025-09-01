@@ -1,27 +1,41 @@
 package CCASolutions.BalandrauAPI.config;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.DatosDAO;
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
-import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
+import CCASolutions.BalandrauAPI.dao.RegimenComidasDAO;
+import CCASolutions.BalandrauAPI.dao.ReservasDAO;
+import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.entities.DatosEntity;
+import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
 
-@Component
-public class PoblarBaseDatosEstaticos implements CommandLineRunner 
+@Service
+public class ConfigService implements IConfigService 
 {
+	@Autowired
+	private DatosDAO datosDao;
+	
 	@Autowired
 	private HabitacionesDAO habitacionesDao;
 	
 	@Autowired
-	private DatosDAO datosDao;
+	private RegimenComidasDAO regimenComidasDao;
+	
+	@Autowired
+	private ReservasDAO reservasDao;
+	
+	@Autowired
+	private ClientesDAO clientesDao;
 	
 	@Value("${precioDesayunoString}") 
 	private String precioDesayunoString;
@@ -37,14 +51,105 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 	
 	@Value("${descuentoCampistaString}") 
 	private String descuentoCampistaString;
-
-	@Override
-	public void run(String... args) throws Exception 
+	
+	public boolean restablecerBaseDeDatos()
 	{
+		boolean restablecida = false;
+		
+		try
+		{
+			vaciarTodasLasEntidades();
+			cargarDatosIniciales();
+			restablecida = true;
+		}
+		catch (Exception e)
+		{
+			restablecida = false;
+			System.out.println(e.getMessage());
+		}
+
+		
+		return restablecida;
+	}
+	
+	public boolean hayDatosEnLaBaseDeDatos()
+	{
+		boolean hayDatos = true;
+		
+		if (datosDao.count() == 0)
+		{
+			hayDatos = false;
+		}
+		else if (habitacionesDao.count() == 0)
+		{
+			hayDatos = false;
+		}
+		else if (regimenComidasDao.count() == 0)
+		{
+			hayDatos = false;
+		}
+		else if (reservasDao.count() == 0)
+		{
+			hayDatos = false;
+		}		
+		
+		return hayDatos;
+	}
+	
+	public boolean vaciarTodasLasEntidades()
+	{
+		boolean entidadesVacias = false;		
+		
+		try
+		{
+			regimenComidasDao.deleteAll();
+			reservasDao.deleteAll();
+
+			habitacionesDao.deleteAll();
+			clientesDao.deleteAll();
+			
+			datosDao.deleteAll();
+			
+			entidadesVacias = true;			
+			
+		}
+		catch (Exception e)
+		{
+			entidadesVacias = false;
+		}
+		
+		
+		return entidadesVacias;
+	}
+	
+	public boolean cargarDatosIniciales()
+	{
+		boolean datosCargados = false;
+		
+		if(clientesDao.count() == 0)
+		{
+				List<ClientesEntity> listaClientes = new ArrayList<>();
+				
+				ClientesEntity cliente1 = new ClientesEntity();
+				cliente1.setNombre("admin");
+				cliente1.setApellido1("A1");
+				cliente1.setApellido2("A2");
+				cliente1.setEmail("admin@balandrau.com");
+				cliente1.setDni("adminDNI");				
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+				cliente1.setFechaNacimiento(LocalDate.parse("12-05-1993", formatter));				
+				cliente1.setEsAdmin(true);
+				cliente1.setEsCampista(true);
+				cliente1.setPassword("1234");
+				listaClientes.add(cliente1);
+				
+				clientesDao.saveAll(listaClientes);				
+		}
+		
 		if (habitacionesDao.count() == 0) 
 		{
 			List<HabitacionesEntity> listaHabitaciones = new ArrayList<>();			
-			
+				
 			HabitacionesEntity habitacion1 = new HabitacionesEntity();
 			habitacion1.setNombre("Habitación comunitaria");
 			habitacion1.setDescripcion("Habitacion comunitaria con baño compartido");
@@ -62,7 +167,7 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			habitacion2.setPrecioPorNoche(BigDecimal.valueOf(100.00));
 			habitacion2.setTipoHabitacion(2);
 			listaHabitaciones.add(habitacion2);
-			
+				
 			HabitacionesEntity habitacion3 = new HabitacionesEntity();
 			habitacion3.setNombre("Habitación privada con orientacion este");
 			habitacion3.setDescripcion("Habitación para cuatro personas con baño incluido");
@@ -80,7 +185,7 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			habitacion4.setPrecioPorNoche(BigDecimal.valueOf(150.00));
 			habitacion4.setTipoHabitacion(2);
 			listaHabitaciones.add(habitacion4);
-			
+				
 			HabitacionesEntity habitacion5 = new HabitacionesEntity();
 			habitacion5.setNombre("Habitación privada con orientacion oeste");
 			habitacion5.setDescripcion("Habitación para cuatro personas con baño incluido");
@@ -116,7 +221,7 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			habitacion8.setPrecioPorNoche(BigDecimal.valueOf(35.00));
 			habitacion8.setTipoHabitacion(4);
 			listaHabitaciones.add(habitacion8);
-			
+				
 			HabitacionesEntity habitacion9 = new HabitacionesEntity();
 			habitacion9.setNombre("Habitación privada con orientacion noroeste");
 			habitacion9.setDescripcion("Habitación para una persona con baño incluido");
@@ -125,14 +230,14 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			habitacion9.setPrecioPorNoche(BigDecimal.valueOf(30.00));
 			habitacion9.setTipoHabitacion(4);
 			listaHabitaciones.add(habitacion9);	
-			
-            habitacionesDao.saveAll(listaHabitaciones);
+				
+	         habitacionesDao.saveAll(listaHabitaciones);
 		}
-		
+			
 		if (datosDao.count() == 0) 
 		{
 			List<DatosEntity> listaDatos = new ArrayList<>();
-			
+				
 			DatosEntity dato1 = new DatosEntity();
 			dato1.setConcepto(precioDesayunoString);
 			dato1.setValor("7");
@@ -147,7 +252,7 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			dato3.setConcepto(precioCenaString);
 			dato3.setValor("8");
 			listaDatos.add(dato3);
-			
+				
 			DatosEntity dato4 = new DatosEntity();
 			dato4.setConcepto(descuentoCampistaString);
 			dato4.setValor("20");
@@ -157,8 +262,11 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			dato5.setConcepto(descuentoPicnicString);
 			dato5.setValor("2");
 			listaDatos.add(dato5);			
-			
+				
 			datosDao.saveAll(listaDatos);
-		}
+		}		
+		
+		return datosCargados;
 	}
+
 }

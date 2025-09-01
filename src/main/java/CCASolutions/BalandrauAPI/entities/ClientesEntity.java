@@ -30,12 +30,23 @@ public class ClientesEntity implements Serializable
 	private String email;
 	private String password;
 	private boolean esCampista;
+	private boolean esAdmin;
 	private LocalDate fechaNacimiento;
 	
 	@OneToMany(mappedBy="cliente")
 	private List<ReservasEntity> reservas = new ArrayList<ReservasEntity>();
 
 	
+	public boolean isEsAdmin() 
+	{
+		return esAdmin;
+	}
+
+	public void setEsAdmin(boolean esAdmin) 
+	{
+		this.esAdmin = esAdmin;
+	}
+
 	public long getId() 
 	{
 		return id;

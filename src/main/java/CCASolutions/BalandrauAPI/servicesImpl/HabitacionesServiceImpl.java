@@ -59,11 +59,13 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	
 	public boolean habitacionDisponible(RequestHabitacion requestHabitacion)
 	{		
-		boolean habitacionDisponible = true;		
+		boolean habitacionDisponible = true;
+		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
 		
-		if(requestHabitacion.habitacionId() == this.habitacionesDao.getHabitacionComunitariaId())
+		if(requestHabitacion.habitacionId() == habitacionComunitariaId)
 		{
 			HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes());
+			
 			if (habitacionComunitaria == null)
 			{
 				habitacionDisponible = false;
