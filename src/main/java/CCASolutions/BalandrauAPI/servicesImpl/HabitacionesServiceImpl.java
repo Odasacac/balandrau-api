@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,45 +149,59 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		HabitacionesEntity habitacionComunitaria = new HabitacionesEntity();
 		boolean disponibleHabitacionComunitaria = true;		
 		Map<LocalDate, Integer> ocupacionPorDia = new HashMap<>();
+		
 		List<Object[]> reservasHabitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
 		
-		for (int j=0; j<reservasHabitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
-		{			
-			Object[] reserva = reservasHabitacionComunitariaPorFecha.get(j);
-			
-			LocalDate inicio = (LocalDate) reserva[6];
-			LocalDate fin = (LocalDate) reserva[7];
-			Integer numeroHuespedesReserva = (Integer) reserva[4];
-			Integer numeroMaximoHuespedes = (Integer) reserva[5];
-			
-			for (LocalDate d = inicio; !d.isAfter(fin.minusDays(1)) && disponibleHabitacionComunitaria; d = d.plusDays(1)) 
-			{
-				int ocupacionActual = ocupacionPorDia.getOrDefault(d, 0);
-
-				if (ocupacionActual + numeroHuespedesReserva + numeroNuevosHuespedes > numeroMaximoHuespedes) 
-				{
-					disponibleHabitacionComunitaria = false;
-				}
-				else
-				{
-					ocupacionPorDia.put(d, ocupacionActual + numeroHuespedesReserva);
-				}		
-			}
-		}
-		
-		if (disponibleHabitacionComunitaria && !reservasHabitacionComunitariaPorFecha.isEmpty())
+		if (!reservasHabitacionComunitariaPorFecha.isEmpty())
 		{
-			Object[] primeraReserva = reservasHabitacionComunitariaPorFecha.get(0);
+			for (int j=0; j<reservasHabitacionComunitariaPorFecha.size() && disponibleHabitacionComunitaria; j++)
+			{			
+				Object[] reserva = reservasHabitacionComunitariaPorFecha.get(j);
+				
+				LocalDate inicio = (LocalDate) reserva[6];
+				LocalDate fin = (LocalDate) reserva[7];
+				Integer numeroHuespedesReserva = (Integer) reserva[4];
+				Integer numeroMaximoHuespedes = (Integer) reserva[5];
+				
+				for (LocalDate d = inicio; !d.isAfter(fin.minusDays(1)) && disponibleHabitacionComunitaria; d = d.plusDays(1)) 
+				{
+					int ocupacionActual = ocupacionPorDia.getOrDefault(d, 0);
+
+					if (ocupacionActual + numeroHuespedesReserva + numeroNuevosHuespedes > numeroMaximoHuespedes) 
+					{
+						disponibleHabitacionComunitaria = false;
+					}
+					else
+					{
+						ocupacionPorDia.put(d, ocupacionActual + numeroHuespedesReserva);
+					}		
+				}
+			}
 			
-			habitacionComunitaria.setNombre((String) primeraReserva[1]);
-			habitacionComunitaria.setDescripcion((String) primeraReserva[2]);
-			habitacionComunitaria.setPrecioPorNoche((BigDecimal) primeraReserva[3]);
-			habitacionComunitaria.setId((Long) primeraReserva[0]);
+			if (disponibleHabitacionComunitaria && !reservasHabitacionComunitariaPorFecha.isEmpty())
+			{
+				Object[] primeraReserva = reservasHabitacionComunitariaPorFecha.get(0);
+				
+				habitacionComunitaria.setNombre((String) primeraReserva[1]);
+				habitacionComunitaria.setDescripcion((String) primeraReserva[2]);
+				habitacionComunitaria.setPrecioPorNoche((BigDecimal) primeraReserva[3]);
+				habitacionComunitaria.setId((Long) primeraReserva[0]);
+			}
+			else
+			{
+				habitacionComunitaria = null;
+			}
 		}
 		else
 		{
-			habitacionComunitaria = null;
+			Optional <HabitacionesEntity> habitacionComunitariaoptional =this.habitacionesDao.findById(this.habitacionesDao.getHabitacionComunitariaId());
+			
+			if(habitacionComunitariaoptional.isPresent())
+			{
+				habitacionComunitaria=habitacionComunitariaoptional.get();
+			}
 		}
+		
 		
 		return habitacionComunitaria;
 	}
