@@ -23,6 +23,6 @@ public interface HabitacionesDAO extends JpaRepository <HabitacionesEntity, Long
 	@Query("SELECT h.numeroDeHabitacion FROM HabitacionesEntity h LEFT JOIN ReservasEntity r ON r.habitacion = h AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada WHERE h.numeroMaximoDeHuespedes >= :numeroHuespedes AND h.id = :habitacionId AND r.id IS NULL")
 	Integer habitacionDisponible(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes,	@Param("habitacionId") long habitacionId);
 	
-	@Query("SELECT h.id FROM HabitacionesEntity h WHERE h.TipoDeHabitacion = 1")
+	@Query("SELECT h.id FROM HabitacionesEntity h WHERE h.tipoHabitacion = 1")
 	public abstract Long getHabitacionComunitariaId ();
 }
