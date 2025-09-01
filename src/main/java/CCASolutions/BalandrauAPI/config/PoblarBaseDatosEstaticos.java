@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -15,20 +17,30 @@ import CCASolutions.BalandrauAPI.entities.DatosEntity;
 @Component
 public class PoblarBaseDatosEstaticos implements CommandLineRunner 
 {
-
-	private final HabitacionesDAO habitacionesDao;
-	private final DatosDAO datosDao;
-
-	public PoblarBaseDatosEstaticos(HabitacionesDAO habitacionesDao, DatosDAO datosDao) 
-	{
-		this.habitacionesDao = habitacionesDao;
-		this.datosDao = datosDao;
-	}
+	@Autowired
+	private HabitacionesDAO habitacionesDao;
+	
+	@Autowired
+	private DatosDAO datosDao;
+	
+	@Value("${precioDesayunoString}") 
+	private String precioDesayunoString;
+	
+	@Value("${precioComidaString}") 
+	private String precioComidaString;
+	
+	@Value("${precioCenaString}") 
+	private String precioCenaString;
+	
+	@Value("${descuentoPicnicString}") 
+	private String descuentoPicnicString;
+	
+	@Value("${descuentoCampistaString}") 
+	private String descuentoCampistaString;
 
 	@Override
 	public void run(String... args) throws Exception 
 	{
-
 		if (habitacionesDao.count() == 0) 
 		{
 			List<HabitacionesEntity> listaHabitaciones = new ArrayList<>();			
@@ -122,30 +134,29 @@ public class PoblarBaseDatosEstaticos implements CommandLineRunner
 			List<DatosEntity> listaDatos = new ArrayList<>();
 			
 			DatosEntity dato1 = new DatosEntity();
-			dato1.setConcepto("descuentoCampista");
-			dato1.setValor("20");
+			dato1.setConcepto(precioDesayunoString);
+			dato1.setValor("7");
 			listaDatos.add(dato1);
-			
+
 			DatosEntity dato2 = new DatosEntity();
-			dato2.setConcepto("precioDesayuno");
-			dato2.setValor("7");
+			dato2.setConcepto(precioComidaString);
+			dato2.setValor("10");
 			listaDatos.add(dato2);
 
 			DatosEntity dato3 = new DatosEntity();
-			dato3.setConcepto("precioAlmuerzo");
-			dato3.setValor("10");
+			dato3.setConcepto(precioCenaString);
+			dato3.setValor("8");
 			listaDatos.add(dato3);
-
+			
 			DatosEntity dato4 = new DatosEntity();
-			dato4.setConcepto("precioCena");
-			dato4.setValor("8");
+			dato4.setConcepto(descuentoCampistaString);
+			dato4.setValor("20");
 			listaDatos.add(dato4);
 
 			DatosEntity dato5 = new DatosEntity();
-			dato5.setConcepto("descuentoPicnic");
+			dato5.setConcepto(descuentoPicnicString);
 			dato5.setValor("2");
-			listaDatos.add(dato5);		
-			
+			listaDatos.add(dato5);			
 			
 			datosDao.saveAll(listaDatos);
 		}
