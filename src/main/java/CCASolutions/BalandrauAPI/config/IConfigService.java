@@ -6,8 +6,6 @@ public interface IConfigService
 	
 	public abstract boolean cargarDatosIniciales();
 	
-	public abstract boolean hayDatosEnLaBaseDeDatos();
-	
 	public abstract boolean restablecerBaseDeDatos();
 
 }

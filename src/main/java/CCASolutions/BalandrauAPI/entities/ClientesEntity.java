@@ -37,6 +37,7 @@ public class ClientesEntity implements Serializable
 	private List<ReservasEntity> reservas = new ArrayList<ReservasEntity>();
 
 	
+	
 	public boolean isEsAdmin() 
 	{
 		return esAdmin;
