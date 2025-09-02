@@ -260,6 +260,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		cliente.setEsAdmin(esAdmin);
 		String passwordEncriptado = this.clientesService.encriptarPassword(password);
 		cliente.setPassword(passwordEncriptado);
+		cliente.setFechaCreacion(LocalDate.now());
 		return cliente;
 	}
 

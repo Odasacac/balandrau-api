@@ -1,6 +1,10 @@
 package CCASolutions.BalandrauAPI.servicesImpl;
 
+import CCASolutions.BalandrauAPI.dao.ClientesDAO;
+import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.services.ClientesService;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +15,9 @@ public class ClientesServiceImpl implements ClientesService
 {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+	
+	@Autowired
+	private ClientesDAO clientesDao;
 
 	public boolean verificarPassword (String passwordIngresado, String hashAlmacenado)
 	{
@@ -26,5 +33,26 @@ public class ClientesServiceImpl implements ClientesService
 		
 		return passwordEncriptado;
 	}
-
+	
+	public boolean clienteExists(Long clienteId)
+	{
+		boolean clienteExiste = false;
+		
+		try
+		{
+			Optional<ClientesEntity> clienteIdBBDDOpt = this.clientesDao.findById(clienteId);
+			
+			if(clienteIdBBDDOpt.isPresent())
+			{
+				clienteExiste=true;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			clienteExiste = false;
+		}
+		
+		return clienteExiste;
+	}
 }

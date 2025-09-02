@@ -1,19 +1,23 @@
 package CCASolutions.BalandrauAPI.servicesImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
+import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
-import CCASolutions.BalandrauAPI.dtos.RequestReservaDTO;
+import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
 import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
 import CCASolutions.BalandrauAPI.entities.RegimenComidasEntity;
 import CCASolutions.BalandrauAPI.entities.ReservasEntity;
 import CCASolutions.BalandrauAPI.exceptions.RegimenComidasException;
 import CCASolutions.BalandrauAPI.exceptions.ReservasException;
+import CCASolutions.BalandrauAPI.services.ClientesService;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 import CCASolutions.BalandrauAPI.services.RegimenComidasService;
 import CCASolutions.BalandrauAPI.services.ReservasService;
@@ -26,17 +30,78 @@ public class ReservasServiceImpl implements ReservasService
 	private ReservasDAO reservasDao;
 	
 	@Autowired
+	private ClientesDAO clientesDao;
+	
+	@Autowired
 	private RegimenComidasService regimenComidasService;
 	
 	@Autowired
 	private HabitacionesService habitacionesService;
 	
-	@Transactional
-	public String guardarNuevaReserva(RequestReservaDTO requestReserva)
+	@Autowired
+	private ClientesService clientesService;
+	
+	public String eliminarReserva(RequestEliminarReserva requestEliminarReserva)
 	{
 		String resultado = "";
 		
-		RequestHabitacion requestHabitacion = new RequestHabitacion(requestReserva.fechaEntrada(), requestReserva.fechaSalida(), requestReserva.numeroHuespedes(), requestReserva.habitacionId());
+		Long usuarioQueQuiereBorrarId = requestEliminarReserva.idUsuarioQueQuiereBorrar();
+		Long reservaABorrarId = requestEliminarReserva.idReservaABorrar();
+		
+		if(this.clientesService.clienteExists(usuarioQueQuiereBorrarId))
+		{			
+			Optional<ReservasEntity> reservaEnBBDD = this.reservasDao.findById(reservaABorrarId);
+			
+			if(reservaEnBBDD.isEmpty())
+			{
+				resultado = new String("No se ha encontrado esa reserva, no se ha podido eliminar.");				
+			}
+			else
+			{
+				Long clienteDeLaReservaId = reservaEnBBDD.get().getCliente().getId();
+				
+				if(clienteDeLaReservaId.equals(usuarioQueQuiereBorrarId))
+				{
+					try
+					{
+						this.regimenComidasService.eliminarRegimenesPorReservaId(reservaABorrarId);
+						this.reservasDao.deleteById(reservaABorrarId);
+						resultado = new String ("Reserva eliminada.");
+					}
+					catch(Exception e)
+					{
+						resultado = new String("Error al eliminar la reserva.");	
+						System.out.println(e.getMessage());
+					}
+		
+				}
+				else
+				{
+					if(this.clientesDao.isAdmin(usuarioQueQuiereBorrarId))
+					{
+						this.reservasDao.deleteById(reservaABorrarId);
+						resultado = new String ("Reserva eliminada.");
+					}
+					else
+					{
+						resultado = new String ("No tiene permisos para eliminar esta reserva.");
+					}
+				}
+			}
+		}
+		else
+		{
+			resultado = new String ("No existe este cliente.");	
+		}
+		return resultado;
+	}
+	
+	@Transactional
+	public String guardarNuevaReserva(RequestHacerReserva requestHacerReserva)
+	{
+		String resultado = "";
+		
+		RequestHabitacion requestHabitacion = new RequestHabitacion(requestHacerReserva.fechaEntrada(), requestHacerReserva.fechaSalida(), requestHacerReserva.numeroHuespedes(), requestHacerReserva.habitacionId());
 		
 		
 		if(!this.habitacionesService.habitacionDisponible(requestHabitacion))
@@ -47,11 +112,11 @@ public class ReservasServiceImpl implements ReservasService
 		{
 			try
 			{
-				Long reservaGuardadaId = guardarReserva(requestReserva);
+				Long reservaGuardadaId = guardarReserva(requestHacerReserva);
 				
-				if (!requestReserva.comidas().isEmpty()) 
+				if (!requestHacerReserva.comidas().isEmpty()) 
 				{
-					guardarRegimen(reservaGuardadaId, requestReserva.comidas(), requestReserva.alergias());
+					guardarRegimen(reservaGuardadaId, requestHacerReserva.comidas(), requestHacerReserva.alergias());
 				}
 				
 				resultado = "Reserva guardada con éxito.";
@@ -76,7 +141,7 @@ public class ReservasServiceImpl implements ReservasService
 	}
 	
 	
-	private Long guardarReserva(RequestReservaDTO requestReserva)
+	private Long guardarReserva(RequestHacerReserva requestReserva)
 	{
 		try
 		{
@@ -128,4 +193,6 @@ public class ReservasServiceImpl implements ReservasService
 			}
 		}
 	}
+	
+	
 }

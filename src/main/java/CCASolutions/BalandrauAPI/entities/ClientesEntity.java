@@ -32,12 +32,24 @@ public class ClientesEntity implements Serializable
 	private boolean esCampista;
 	private boolean esAdmin;
 	private LocalDate fechaNacimiento;
+	private LocalDate fechaCreacion;
 	
 	@OneToMany(mappedBy="cliente")
 	private List<ReservasEntity> reservas = new ArrayList<ReservasEntity>();
 
 	
 	
+	
+	public LocalDate getFechaCreacion() 
+	{
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(LocalDate fechaCreacion) 
+	{
+		this.fechaCreacion = fechaCreacion;
+	}
+
 	public boolean isEsAdmin() 
 	{
 		return esAdmin;

@@ -14,6 +14,11 @@ public class RegimenComidaServiceImpl implements RegimenComidasService
 	@Autowired
 	private RegimenComidasDAO regimenComidasDao;
 	
+	public void eliminarRegimenesPorReservaId(Long reservaId)
+	{
+		this.regimenComidasDao.deleteByReservaId(reservaId);
+	}
+	
 	public void guardarNuevoRegimen(RegimenComidasEntity regimen, Long reservaId, String alergias)
 	{
 		ReservasEntity reservaParaId = new ReservasEntity();

@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import CCASolutions.BalandrauAPI.dtos.RequestReservaDTO;
+import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
+import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
 import CCASolutions.BalandrauAPI.services.ReservasService;
 
 
@@ -23,7 +24,7 @@ public class ReservasController
 
 	
 	@PostMapping("/guardar")
-	public ResponseEntity <String> guardarReserva (@RequestBody RequestReservaDTO requestReserva)
+	public ResponseEntity <String> guardarReserva (@RequestBody RequestHacerReserva requestReserva)
 	{
 		HttpStatus status = HttpStatus.OK;
 		String body = "";
@@ -45,6 +46,25 @@ public class ReservasController
 			body="Error al guardar la reserva.";
 		}		
 		
+		
+		return new ResponseEntity<String>(body, status);
+	}
+	
+	@PostMapping("/eliminar")
+	public ResponseEntity <String> eliminarReserva (@RequestBody RequestEliminarReserva requestEliminarReserva)
+	{
+		HttpStatus status = HttpStatus.OK;
+		String body = "";
+		
+		try
+		{
+			body = this.reservasService.eliminarReserva(requestEliminarReserva);
+		}
+		catch(Exception e)
+		{
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			body="Error al eliminar la reserva.";
+		}
 		
 		return new ResponseEntity<String>(body, status);
 	}
