@@ -33,6 +33,8 @@ public class ReservasEntity implements Serializable
 	private LocalDate fechaEntrada;
 	private LocalDate fechaSalida;
 	private LocalDate fechaCreacion;
+	private LocalDate fechaUltimaModificacion;
+	private Long idClienteUltimaModificacion;
 	private int numeroHuespedes;	
 	private BigDecimal precioTotal;	
 	private String comentarios;
@@ -47,6 +49,26 @@ public class ReservasEntity implements Serializable
 
 	
 	
+	public LocalDate getFechaUltimaModificacion() 
+	{
+		return fechaUltimaModificacion;
+	}
+
+	public void setFechaUltimaModificacion(LocalDate fechaUltimaModificacion) 
+	{
+		this.fechaUltimaModificacion = fechaUltimaModificacion;
+	}
+
+	public Long getIdClienteUltimaModificacion() 
+	{
+		return idClienteUltimaModificacion;
+	}
+
+	public void setIdClienteUltimaModificacion(Long idClienteUltimaModificacion) 
+	{
+		this.idClienteUltimaModificacion = idClienteUltimaModificacion;
+	}
+
 	public LocalDate getFechaCreacion() 
 	{
 		return fechaCreacion;

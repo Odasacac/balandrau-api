@@ -46,7 +46,60 @@ public class ReservasServiceImpl implements ReservasService
 	{
 		String resultado = "";
 		
-		//TO DO
+		if(this.esPosibleModificarLaReserva(requestReserva, reservaAModificar.getId()))
+		{	
+			if(requestReserva.comentarios() != null)
+			{
+				reservaAModificar.setComentarios(requestReserva.comentarios());
+			}
+			
+			if(requestReserva.fechaEntrada()!=null)
+			{
+				reservaAModificar.setFechaEntrada(requestReserva.fechaEntrada());
+			}
+			
+			if(requestReserva.fechaSalida()!=null)
+			{
+				reservaAModificar.setFechaSalida(requestReserva.fechaSalida());
+			}
+			
+			if(requestReserva.habitacionId()!=null)
+			{
+				HabitacionesEntity habitacion = new HabitacionesEntity();
+				habitacion.setId(requestReserva.habitacionId());
+				reservaAModificar.setHabitacion(habitacion);
+			}
+			
+			if(requestReserva.numeroHuespedes() != null)
+			{
+				reservaAModificar.setNumeroHuespedes(requestReserva.numeroHuespedes());
+			}
+			
+			if(requestReserva.comidas() == null)
+			{
+				reservaAModificar.setHayComidas(false);
+				this.regimenComidasService.eliminarRegimenesPorReservaId(requestReserva.reservaId());
+			}
+			else
+			{
+				reservaAModificar.setHayComidas(true);
+				guardarRegimen(requestReserva.reservaId(), requestReserva.comidas(), requestReserva.alergias());
+			}
+			
+			if(requestReserva.precioTotal() != null)
+			{
+				reservaAModificar.setPrecioTotal(requestReserva.precioTotal());
+			}			
+			
+			this.reservasDao.save(reservaAModificar);				
+			
+			
+			resultado = new String("Reserva modificada con éxito.");
+		}
+		else
+		{
+			resultado = new String("No es posible modificar la reserva.");
+		}
 		
 		return resultado;
 	}
@@ -149,10 +202,11 @@ public class ReservasServiceImpl implements ReservasService
 		try
 		{
 			ReservasEntity reserva = new ReservasEntity();
-		
+			LocalDate hoy = LocalDate.now();
+			
 			reserva.setFechaEntrada(requestReserva.fechaEntrada());
 			reserva.setFechaSalida(requestReserva.fechaSalida());
-			reserva.setFechaCreacion(LocalDate.now());
+			reserva.setFechaCreacion(hoy);
 			reserva.setNumeroHuespedes(requestReserva.numeroHuespedes());
 			reserva.setPrecioTotal(requestReserva.precioTotal());
 			reserva.setComentarios(requestReserva.comentarios());
@@ -169,6 +223,9 @@ public class ReservasServiceImpl implements ReservasService
 			ClientesEntity cliente = new ClientesEntity();
 			cliente.setId(requestReserva.clienteId());
 			reserva.setCliente(cliente);
+			
+			reserva.setIdClienteUltimaModificacion(requestReserva.clienteId());
+			reserva.setFechaUltimaModificacion(hoy);
 
 			ReservasEntity reservaGuardada = this.reservasDao.save(reserva);
 		
@@ -193,9 +250,15 @@ public class ReservasServiceImpl implements ReservasService
 			catch (Exception e)
 			{
 				System.out.println("Error en el régimen: " + e);
-				throw new RegimenComidasException("Error en el régimen", e);
 			}
 		}
+	}
+	
+	private boolean esPosibleModificarLaReserva(RequestModificarReserva requestReserva, Long reservaAModificarId)
+	{
+		boolean esPosible = false;
+		
+		return esPosible;
 	}
 	
 	
