@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
-import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
 import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
@@ -18,7 +17,6 @@ import CCASolutions.BalandrauAPI.entities.ReservasEntity;
 import CCASolutions.BalandrauAPI.exceptions.RegimenComidasException;
 import CCASolutions.BalandrauAPI.exceptions.ReservasException;
 import CCASolutions.BalandrauAPI.services.ClientesService;
-import CCASolutions.BalandrauAPI.services.HabitacionesService;
 import CCASolutions.BalandrauAPI.services.RegimenComidasService;
 import CCASolutions.BalandrauAPI.services.ReservasService;
 import jakarta.transaction.Transactional;
@@ -34,9 +32,6 @@ public class ReservasServiceImpl implements ReservasService
 	
 	@Autowired
 	private RegimenComidasService regimenComidasService;
-	
-	@Autowired
-	private HabitacionesService habitacionesService;
 	
 	@Autowired
 	private ClientesService clientesService;
@@ -100,42 +95,33 @@ public class ReservasServiceImpl implements ReservasService
 	public String guardarNuevaReserva(RequestHacerReserva requestHacerReserva)
 	{
 		String resultado = "";
-		
-		RequestHabitacion requestHabitacion = new RequestHabitacion(requestHacerReserva.fechaEntrada(), requestHacerReserva.fechaSalida(), requestHacerReserva.numeroHuespedes(), requestHacerReserva.habitacionId());
-		
-		
-		if(!this.habitacionesService.habitacionDisponible(requestHabitacion))
+			
+		try
 		{
-			resultado = "La habitación ya está reservada, prueba con otras opciones.";
+			Long reservaGuardadaId = guardarReserva(requestHacerReserva);
+				
+			if (!requestHacerReserva.comidas().isEmpty()) 
+			{
+				guardarRegimen(reservaGuardadaId, requestHacerReserva.comidas(), requestHacerReserva.alergias());
+			}
+				
+			resultado = "Reserva guardada con éxito.";
 		}
-		else
+		catch (ReservasException e)
 		{
-			try
-			{
-				Long reservaGuardadaId = guardarReserva(requestHacerReserva);
-				
-				if (!requestHacerReserva.comidas().isEmpty()) 
-				{
-					guardarRegimen(reservaGuardadaId, requestHacerReserva.comidas(), requestHacerReserva.alergias());
-				}
-				
-				resultado = "Reserva guardada con éxito.";
-			}
-			catch (ReservasException e)
-			{
-				resultado = "Error al guardar la reserva.";
-			}
-			catch (RegimenComidasException e)
-			{
-				resultado = "Error al guardar el régimen.";
-			}
-			catch(Exception e)
-			{
-		
-				resultado = "Error general.";
-			}
+			resultado = "Error al guardar la reserva.";
+			System.out.println(e.getMessage());
 		}
-		
+		catch (RegimenComidasException e)
+		{
+			resultado = "Error al guardar el régimen.";
+			System.out.println(e.getMessage());
+		}
+		catch(Exception e)
+		{		
+			resultado = "Error general.";
+			System.out.println(e.getMessage());
+		}		
 		
 		return resultado;
 	}

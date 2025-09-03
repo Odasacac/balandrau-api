@@ -33,12 +33,12 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	
 	public List<HabitacionesDTO> getHabitacionesDisponiblesPorFechaYHuespedes(RequestHabitacionesDTO requestHabitaciones)
 	{
+		List<HabitacionesDTO> habitacionesDisponiblesDTO = new ArrayList<HabitacionesDTO>();
+		
 		LocalDate fechaEntrada = requestHabitaciones.fechaEntrada();
 		LocalDate fechaSalida = requestHabitaciones.fechaSalida();						
 		int numeroHuespedes = requestHabitaciones.numeroHuespedes();
 		boolean esCampista = requestHabitaciones.esCampista();
-		
-		List<HabitacionesDTO> habitacionesDisponiblesDTO = new ArrayList<HabitacionesDTO>();
 		
 		List<HabitacionesDTO> habitacionesPrivadasDisponibles = getHabitacionesPrivadasDisponibles(fechaEntrada, fechaSalida, numeroHuespedes, esCampista);
 		
@@ -59,25 +59,25 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	
 	public boolean habitacionDisponible(RequestHabitacion requestHabitacion)
 	{		
-		boolean habitacionDisponible = true;
+		boolean habitacionDisponible = false;
 		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
 		
 		if(requestHabitacion.habitacionId() == habitacionComunitariaId)
 		{
 			HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes());
 			
-			if (habitacionComunitaria == null)
+			if (habitacionComunitaria != null)
 			{
-				habitacionDisponible = false;
+				habitacionDisponible = true;
 			}
 		}
 		else
 		{
-			Integer habitacion = this.habitacionesDao.habitacionDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes(), requestHabitacion.habitacionId());
+			Integer habitacionId = this.habitacionesDao.habitacionDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes(), requestHabitacion.habitacionId());
 			
-			if (habitacion == null)
+			if (habitacionId != null)
 			{
-				habitacionDisponible = false;
+				habitacionDisponible = true;
 			}
 		}		
 		
@@ -134,8 +134,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	
 			Long habitacionComunitariaId = habitacionComunitaria.getId();
 			
-			habitacionComunitariaCompleta = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionComunitariaId);			
-				
+			habitacionComunitariaCompleta = new HabitacionesDTO(nombre, descripcion, precioTotal, habitacionComunitariaId);						
 		}
 		else
 		{
