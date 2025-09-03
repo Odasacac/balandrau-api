@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
+import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
@@ -34,6 +35,9 @@ public class ReservasServiceImpl implements ReservasService
 	private ClientesDAO clientesDao;
 	
 	@Autowired
+	private HabitacionesDAO habitacionesDao;
+	
+	@Autowired
 	private RegimenComidasService regimenComidasService;
 	
 	@Autowired
@@ -46,7 +50,7 @@ public class ReservasServiceImpl implements ReservasService
 	{
 		String resultado = "";
 		
-		if(this.esPosibleModificarLaReserva(requestReserva, reservaAModificar.getId()))
+		if(this.esPosibleModificarLaReserva(requestReserva, reservaAModificar))
 		{	
 			if(requestReserva.comentarios() != null)
 			{
@@ -254,9 +258,26 @@ public class ReservasServiceImpl implements ReservasService
 		}
 	}
 	
-	private boolean esPosibleModificarLaReserva(RequestModificarReserva requestReserva, Long reservaAModificarId)
+	private boolean esPosibleModificarLaReserva(RequestModificarReserva requestReserva, ReservasEntity reservaAModificar)
 	{
 		boolean esPosible = false;
+		
+		//TO DO
+		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
+		
+		if(reservaAModificar.getHabitacion().getId() == habitacionComunitariaId)
+		{
+		
+		}
+		else
+		{
+			Integer habitacionId = this.habitacionesDao.habitacionDisponibleParaModificar(requestReserva.fechaEntrada(), requestReserva.fechaSalida(), requestReserva.numeroHuespedes(), requestReserva.habitacionId(), requestReserva.reservaId());
+			
+			if (habitacionId != null)
+			{
+				esPosible = true;
+			}
+		}
 		
 		return esPosible;
 	}

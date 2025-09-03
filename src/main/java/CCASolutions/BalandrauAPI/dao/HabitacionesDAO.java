@@ -20,8 +20,12 @@ public interface HabitacionesDAO extends JpaRepository <HabitacionesEntity, Long
 	public abstract List<Object[]> getHabitacionComunitariaPorFecha(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida);
 
 	@Query("SELECT h.numeroDeHabitacion FROM HabitacionesEntity h LEFT JOIN ReservasEntity r ON r.habitacion = h AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada WHERE h.numeroMaximoDeHuespedes >= :numeroHuespedes AND h.id = :habitacionId AND r.id IS NULL")
-	public abstract Integer habitacionDisponible(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes,	@Param("habitacionId") long habitacionId);
+	public abstract Integer habitacionDisponible(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes,	@Param("habitacionId") Long habitacionId);
 	
 	@Query("SELECT h.id FROM HabitacionesEntity h WHERE h.tipoHabitacion = 1")
-	public abstract Long getHabitacionComunitariaId ();
+	public abstract Long getHabitacionComunitariaId ();	
+
+	@Query("SELECT h.numeroDeHabitacion FROM HabitacionesEntity h LEFT JOIN ReservasEntity r ON r.habitacion = h AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada AND r.id <> :reservaId WHERE h.numeroMaximoDeHuespedes >= :numeroHuespedes AND h.id = :habitacionId AND r.id IS NULL")
+	public abstract Integer habitacionDisponibleParaModificar(@Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida, @Param("numeroHuespedes") int numeroHuespedes, @Param("habitacionId") Long habitacionId, @Param("reservaId") Long reservaId);
+	
 }

@@ -131,7 +131,10 @@ public class ConfigService implements IConfigService, CommandLineRunner
 				List<ClientesEntity> listaClientes = new ArrayList<>();
 				
 				ClientesEntity cliente1 = crearCliente("admin", "A1", "A2", "admin@balandrau.com", "adminDNI", "12-05-1993", true, true, "1234");			
-				listaClientes.add(cliente1);
+				listaClientes.add(cliente1);				
+				
+				ClientesEntity cliente2 = crearCliente("prueba", "P1", "P2", "pruebalandrau@gmail.com", "12345678B", "21-12-1995", true, false, "prueba");			
+				listaClientes.add(cliente2);
 				
 				clientesDao.saveAll(listaClientes);
 				clientesCargados=true;
