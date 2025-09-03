@@ -1,5 +1,6 @@
 package CCASolutions.BalandrauAPI.servicesImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
+import CCASolutions.BalandrauAPI.dtos.RequestModificarReserva;
 import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.entities.HabitacionesEntity;
 import CCASolutions.BalandrauAPI.entities.RegimenComidasEntity;
@@ -17,6 +19,7 @@ import CCASolutions.BalandrauAPI.entities.ReservasEntity;
 import CCASolutions.BalandrauAPI.exceptions.RegimenComidasException;
 import CCASolutions.BalandrauAPI.exceptions.ReservasException;
 import CCASolutions.BalandrauAPI.services.ClientesService;
+import CCASolutions.BalandrauAPI.services.HabitacionesService;
 import CCASolutions.BalandrauAPI.services.RegimenComidasService;
 import CCASolutions.BalandrauAPI.services.ReservasService;
 import jakarta.transaction.Transactional;
@@ -35,6 +38,20 @@ public class ReservasServiceImpl implements ReservasService
 	
 	@Autowired
 	private ClientesService clientesService;
+	
+	@Autowired
+	private HabitacionesService habitacionService;
+	
+	public String modificarReserva(ReservasEntity reservaAModificar, RequestModificarReserva requestReserva)
+	{
+		String resultado = "";
+		
+		//TO DO
+		
+		return resultado;
+	}
+	
+	
 	
 	public String eliminarReserva(RequestEliminarReserva requestEliminarReserva)
 	{
@@ -135,6 +152,7 @@ public class ReservasServiceImpl implements ReservasService
 		
 			reserva.setFechaEntrada(requestReserva.fechaEntrada());
 			reserva.setFechaSalida(requestReserva.fechaSalida());
+			reserva.setFechaCreacion(LocalDate.now());
 			reserva.setNumeroHuespedes(requestReserva.numeroHuespedes());
 			reserva.setPrecioTotal(requestReserva.precioTotal());
 			reserva.setComentarios(requestReserva.comentarios());

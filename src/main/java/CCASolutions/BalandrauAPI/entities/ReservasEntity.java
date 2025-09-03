@@ -31,7 +31,8 @@ public class ReservasEntity implements Serializable
 	private HabitacionesEntity habitacion;
 	
 	private LocalDate fechaEntrada;
-	private LocalDate fechaSalida;	
+	private LocalDate fechaSalida;
+	private LocalDate fechaCreacion;
 	private int numeroHuespedes;	
 	private BigDecimal precioTotal;	
 	private String comentarios;
@@ -45,6 +46,17 @@ public class ReservasEntity implements Serializable
 	private List<RegimenComidasEntity> regimenComidas = new ArrayList<>();
 
 	
+	
+	public LocalDate getFechaCreacion() 
+	{
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(LocalDate fechaCreacion) 
+	{
+		this.fechaCreacion = fechaCreacion;
+	}
+
 	public long getId() 
 	{
 		return id;

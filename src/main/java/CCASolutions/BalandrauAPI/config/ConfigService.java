@@ -109,9 +109,9 @@ public class ConfigService implements IConfigService, CommandLineRunner
 			entidadesVacias = false;
 		}
 		
-		if(hayInfoEnLaBaseDeDatos())
+		if(!hayInfoEnLaBaseDeDatos())
 		{
-			entidadesVacias=false;
+			entidadesVacias=true;
 		}
 		
 		
@@ -208,27 +208,31 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	
 	private boolean hayInfoEnLaBaseDeDatos()
 	{
-		boolean hayDatos = true;
+		boolean hayDatos = false;
 		
-		if (datosDao.count() == 0)
+		if (datosDao.count() != 0)
 		{
-			hayDatos = false;
+			hayDatos = true;
 		}
-		else if (habitacionesDao.count() == 0)
+		
+		if (habitacionesDao.count() != 0)
 		{
-			hayDatos = false;
+			hayDatos = true;
 		}
-		else if (regimenComidasDao.count() == 0)
+		
+		if (regimenComidasDao.count() != 0)
 		{
-			hayDatos = false;
+			hayDatos = true;
 		}
-		else if (reservasDao.count() == 0)
+		
+		if (reservasDao.count() != 0)
 		{
-			hayDatos = false;
+			hayDatos = true;
 		}
-		else if (clientesDao.count()==0)
+		
+		if (clientesDao.count() != 0)
 		{
-			hayDatos=false;
+			hayDatos=true;
 		}
 
 		return hayDatos;

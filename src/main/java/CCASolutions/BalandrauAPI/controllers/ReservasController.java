@@ -1,6 +1,7 @@
 package CCASolutions.BalandrauAPI.controllers;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
+import CCASolutions.BalandrauAPI.dtos.RequestModificarReserva;
+import CCASolutions.BalandrauAPI.entities.ReservasEntity;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 import CCASolutions.BalandrauAPI.services.ReservasService;
 
@@ -27,7 +31,10 @@ public class ReservasController
 	private ReservasService	reservasService;
 	
 	@Autowired
-	private HabitacionesService habitacionesService;	
+	private HabitacionesService habitacionesService;
+	
+	@Autowired
+	private ReservasDAO reservasDao;
 
 	
 	@PostMapping("/guardar")
@@ -85,6 +92,35 @@ public class ReservasController
 		{
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 			body="Error al eliminar la reserva.";
+		}
+		
+		return new ResponseEntity<String>(body, status);
+	}
+	
+	@PostMapping("/modificar")
+	public ResponseEntity<String> modificarReserva (@RequestBody RequestModificarReserva requestModificarReserva)
+	{
+		HttpStatus status = HttpStatus.OK;
+		String body = "";
+		
+		Optional<ReservasEntity> reservaEnBaseDeDatosOpt = this.reservasDao.findById(requestModificarReserva.reservaId());
+		
+		if(reservaEnBaseDeDatosOpt.isEmpty())
+		{
+			body = new String("La reserva no existe.");
+			status = HttpStatus.BAD_REQUEST;
+		}
+		else
+		{
+			try
+			{
+				body = this.reservasService.modificarReserva(reservaEnBaseDeDatosOpt.get(), requestModificarReserva);
+			}
+			catch(Exception e)
+			{
+				status = HttpStatus.INTERNAL_SERVER_ERROR;
+				body="Error al eliminar la reserva.";
+			}
 		}
 		
 		return new ResponseEntity<String>(body, status);
