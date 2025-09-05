@@ -64,7 +64,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		
 		if(requestHabitacion.habitacionId() == habitacionComunitariaId)
 		{
-			HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes());
+			HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(requestHabitacion.fechaEntrada(), requestHabitacion.fechaSalida(), requestHabitacion.numeroHuespedes(), false, 0L);
 			
 			if (habitacionComunitaria != null)
 			{
@@ -119,7 +119,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	{
 		HabitacionesDTO habitacionComunitariaCompleta;
 		
-		HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(fechaEntrada, fechaSalida, numeroHuespedes);
+		HabitacionesEntity habitacionComunitaria = getHabitacionComunitariaIfDisponible(fechaEntrada, fechaSalida, numeroHuespedes, false, 0L);
 		
 		if(habitacionComunitaria != null)
 		{
@@ -145,13 +145,22 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		
 	}
 	
-	private HabitacionesEntity getHabitacionComunitariaIfDisponible(LocalDate fechaEntrada, LocalDate fechaSalida, int numeroNuevosHuespedes)
+	public HabitacionesEntity getHabitacionComunitariaIfDisponible(LocalDate fechaEntrada, LocalDate fechaSalida, int numeroNuevosHuespedes, boolean paraModificar, Long reservaId)
 	{	
 		HabitacionesEntity habitacionComunitaria = new HabitacionesEntity();
 		boolean disponibleHabitacionComunitaria = true;		
 		Map<LocalDate, Integer> ocupacionPorDia = new HashMap<>();
 		
-		List<Object[]> reservasHabitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
+		List<Object[]> reservasHabitacionComunitariaPorFecha = new ArrayList<>();
+		
+		if(paraModificar)
+		{
+			reservasHabitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFechaParaModificar(fechaEntrada, fechaSalida, reservaId);
+		}
+		else
+		{
+			reservasHabitacionComunitariaPorFecha = this.habitacionesDao.getHabitacionComunitariaPorFecha(fechaEntrada, fechaSalida);
+		}
 		
 		if (!reservasHabitacionComunitariaPorFecha.isEmpty())
 		{

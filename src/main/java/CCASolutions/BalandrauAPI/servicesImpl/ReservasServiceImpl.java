@@ -44,7 +44,7 @@ public class ReservasServiceImpl implements ReservasService
 	private ClientesService clientesService;
 	
 	@Autowired
-	private HabitacionesService habitacionService;
+	private HabitacionesService habitacionesService;
 	
 	public String modificarReserva(ReservasEntity reservaAModificar, RequestModificarReserva requestReserva)
 	{
@@ -79,7 +79,7 @@ public class ReservasServiceImpl implements ReservasService
 				reservaAModificar.setNumeroHuespedes(requestReserva.numeroHuespedes());
 			}
 			
-			if(requestReserva.comidas() == null)
+			if(requestReserva.comidas() == null || requestReserva.comidas().isEmpty())
 			{
 				reservaAModificar.setHayComidas(false);
 				this.regimenComidasService.eliminarRegimenesPorReservaId(requestReserva.reservaId());
@@ -93,7 +93,10 @@ public class ReservasServiceImpl implements ReservasService
 			if(requestReserva.precioTotal() != null)
 			{
 				reservaAModificar.setPrecioTotal(requestReserva.precioTotal());
-			}			
+			}
+			
+			reservaAModificar.setFechaUltimaModificacion(LocalDate.now());
+			reservaAModificar.setIdClienteUltimaModificacion(requestReserva.clienteId());
 			
 			this.reservasDao.save(reservaAModificar);				
 			
@@ -262,12 +265,16 @@ public class ReservasServiceImpl implements ReservasService
 	{
 		boolean esPosible = false;
 		
-		//TO DO
 		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
 		
-		if(reservaAModificar.getHabitacion().getId() == habitacionComunitariaId)
+		if(reservaAModificar.getHabitacion().getId().equals(habitacionComunitariaId))
 		{
-		
+			HabitacionesEntity habitacionComunitaria = this.habitacionesService.getHabitacionComunitariaIfDisponible(requestReserva.fechaEntrada(), requestReserva.fechaSalida(), requestReserva.numeroHuespedes(), true, requestReserva.reservaId());
+			
+			if (habitacionComunitaria != null)
+			{
+				esPosible = true;
+			}
 		}
 		else
 		{

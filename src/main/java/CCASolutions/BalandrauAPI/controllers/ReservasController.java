@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
@@ -35,6 +36,9 @@ public class ReservasController
 	
 	@Autowired
 	private ReservasDAO reservasDao;
+	
+	@Autowired
+	private ClientesDAO clientesDao;
 
 	
 	@PostMapping("/guardar")
@@ -103,6 +107,7 @@ public class ReservasController
 		HttpStatus status = HttpStatus.OK;
 		String body = "";
 		
+		Long usuarioQueQuiereModificar = requestModificarReserva.clienteId();
 		Optional<ReservasEntity> reservaEnBaseDeDatosOpt = this.reservasDao.findById(requestModificarReserva.reservaId());
 		
 		if(reservaEnBaseDeDatosOpt.isEmpty())
@@ -112,15 +117,25 @@ public class ReservasController
 		}
 		else
 		{
-			try
+			Long idClienteDeLaReserva = reservaEnBaseDeDatosOpt.get().getCliente().getId();
+			
+			if(idClienteDeLaReserva.equals(usuarioQueQuiereModificar))
 			{
 				body = this.reservasService.modificarReserva(reservaEnBaseDeDatosOpt.get(), requestModificarReserva);
 			}
-			catch(Exception e)
+			else
 			{
-				status = HttpStatus.INTERNAL_SERVER_ERROR;
-				body="Error al eliminar la reserva.";
+				if(this.clientesDao.isAdmin(usuarioQueQuiereModificar))
+				{
+					body = this.reservasService.modificarReserva(reservaEnBaseDeDatosOpt.get(), requestModificarReserva);
+				}
+				else
+				{
+					body = new String("No tienes permisos para realizar esta accion.");
+					status = HttpStatus.BAD_REQUEST;
+				}
 			}
+	
 		}
 		
 		return new ResponseEntity<String>(body, status);
