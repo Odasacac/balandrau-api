@@ -95,59 +95,44 @@ public class ReservasServiceImpl implements ReservasService
 		return respuesta;
 	}
 	
+	@Transactional
 	public String modificarReserva(ReservasEntity reservaAModificar, RequestModificarReserva requestReserva)
 	{
 		String resultado = "";
 		
 		if(this.esPosibleModificarLaReserva(requestReserva, reservaAModificar))
 		{	
-			if(requestReserva.comentarios() != null)
-			{
-				reservaAModificar.setComentarios(requestReserva.comentarios());
-			}
+		
+			reservaAModificar.setComentarios(requestReserva.comentarios());
+			reservaAModificar.setFechaEntrada(requestReserva.fechaEntrada());
+			reservaAModificar.setFechaSalida(requestReserva.fechaSalida());
+			reservaAModificar.setNumeroHuespedes(requestReserva.numeroHuespedes());
+			reservaAModificar.setPrecioTotal(requestReserva.precioTotal());
+			reservaAModificar.setFechaUltimaModificacion(LocalDate.now());
+			reservaAModificar.setIdClienteUltimaModificacion(requestReserva.clienteId());
 			
-			if(requestReserva.fechaEntrada()!=null)
-			{
-				reservaAModificar.setFechaEntrada(requestReserva.fechaEntrada());
-			}
+			HabitacionesEntity habitacion = new HabitacionesEntity();
+			habitacion.setId(requestReserva.habitacionId());
+			reservaAModificar.setHabitacion(habitacion);			
 			
-			if(requestReserva.fechaSalida()!=null)
-			{
-				reservaAModificar.setFechaSalida(requestReserva.fechaSalida());
-			}
-			
-			if(requestReserva.habitacionId()!=null)
-			{
-				HabitacionesEntity habitacion = new HabitacionesEntity();
-				habitacion.setId(requestReserva.habitacionId());
-				reservaAModificar.setHabitacion(habitacion);
-			}
-			
-			if(requestReserva.numeroHuespedes() != null)
-			{
-				reservaAModificar.setNumeroHuespedes(requestReserva.numeroHuespedes());
-			}
 			
 			if(requestReserva.comidas() == null || requestReserva.comidas().isEmpty())
 			{
 				reservaAModificar.setHayComidas(false);
-				this.regimenComidasService.eliminarRegimenesPorReservaId(requestReserva.reservaId());
 			}
 			else
 			{
 				reservaAModificar.setHayComidas(true);
-				guardarRegimen(requestReserva.reservaId(), requestReserva.comidas(), requestReserva.alergias());
 			}
 			
-			if(requestReserva.precioTotal() != null)
+
+			this.reservasDao.save(reservaAModificar);
+			
+			this.regimenComidasService.eliminarRegimenesPorReservaId(requestReserva.reservaId());
+			if(reservaAModificar.isHayComidas())
 			{
-				reservaAModificar.setPrecioTotal(requestReserva.precioTotal());
-			}
-			
-			reservaAModificar.setFechaUltimaModificacion(LocalDate.now());
-			reservaAModificar.setIdClienteUltimaModificacion(requestReserva.clienteId());
-			
-			this.reservasDao.save(reservaAModificar);				
+				guardarRegimen(requestReserva.reservaId(), requestReserva.comidas(), requestReserva.alergias());
+			}			
 			
 			
 			resultado = new String("Reserva modificada con éxito.");
