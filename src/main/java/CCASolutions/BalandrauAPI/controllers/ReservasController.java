@@ -1,12 +1,16 @@
 package CCASolutions.BalandrauAPI.controllers;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
+import CCASolutions.BalandrauAPI.dtos.GetReservasDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHabitacion;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestModificarReserva;
+import CCASolutions.BalandrauAPI.entities.ClientesEntity;
 import CCASolutions.BalandrauAPI.entities.ReservasEntity;
 import CCASolutions.BalandrauAPI.services.HabitacionesService;
 import CCASolutions.BalandrauAPI.services.ReservasService;
@@ -40,6 +46,25 @@ public class ReservasController
 	@Autowired
 	private ClientesDAO clientesDao;
 
+	@GetMapping("/obtener/{id}")
+	public ResponseEntity<List<GetReservasDTO>> getReservasByClienteId(@PathVariable("id") Long clienteId)
+	{
+		HttpStatus status = HttpStatus.OK;
+		List<GetReservasDTO> body = new ArrayList<>();
+		
+		Optional<ClientesEntity> clienteOpt = this.clientesDao.findById(clienteId);
+		
+		if(clienteOpt.isPresent())
+		{
+			body = this.reservasService.getReservasByClienteId(clienteId);
+		}
+		else
+		{
+			status = HttpStatus.NOT_FOUND;
+		}
+		
+		return new ResponseEntity<List<GetReservasDTO>>(body, status);
+	}
 	
 	@PostMapping("/guardar")
 	public ResponseEntity <String> guardarReserva (@RequestBody RequestHacerReserva requestReserva)

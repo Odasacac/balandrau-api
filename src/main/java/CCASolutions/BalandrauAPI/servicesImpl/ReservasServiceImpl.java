@@ -1,6 +1,7 @@
 package CCASolutions.BalandrauAPI.servicesImpl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
+import CCASolutions.BalandrauAPI.dtos.GetReservasDTO;
 import CCASolutions.BalandrauAPI.dtos.RequestEliminarReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestHacerReserva;
 import CCASolutions.BalandrauAPI.dtos.RequestModificarReserva;
@@ -45,6 +47,53 @@ public class ReservasServiceImpl implements ReservasService
 	
 	@Autowired
 	private HabitacionesService habitacionesService;
+	
+	
+	public List<GetReservasDTO> getReservasByClienteId (Long clienteId)
+	{
+		List<GetReservasDTO> respuesta = new ArrayList<>();
+		
+		List<ReservasEntity> reservas = new ArrayList<>();
+		
+		if(this.clientesDao.isAdmin(clienteId))
+		{
+			reservas = this.reservasDao.findAll();
+		}
+		else
+		{
+			reservas = this.reservasDao.findByCliente_Id(clienteId);
+		}
+		
+		if (!reservas.isEmpty())
+		{
+			for (int i = 0; i<reservas.size(); i++)
+			{
+				ReservasEntity reservaConcreta = reservas.get(i);
+				
+				Long id = reservaConcreta.getId();
+				String comentarios = reservaConcreta.getComentarios();
+				LocalDate fechaEntrada = reservaConcreta.getFechaEntrada();
+				LocalDate fechaSalida = reservaConcreta.getFechaSalida();
+				Boolean hayComidas = reservaConcreta.isHayComidas();
+				Integer numeroDeHuespedes = reservaConcreta.getNumeroHuespedes();
+				Long habitacionId = reservaConcreta.getHabitacion().getId();
+				
+				Optional<HabitacionesEntity> habitacionDeLaReserva = this.habitacionesDao.findById(habitacionId);
+				String nombreHabitacion = "";
+				if(habitacionDeLaReserva.isPresent())
+				{
+					nombreHabitacion = habitacionDeLaReserva.get().getNombre();
+				}
+				
+				GetReservasDTO reservaDTO = new GetReservasDTO(id, comentarios, fechaEntrada, fechaSalida, hayComidas, numeroDeHuespedes, habitacionId, nombreHabitacion);
+				respuesta.add(reservaDTO);
+			}
+			
+		}
+		
+		
+		return respuesta;
+	}
 	
 	public String modificarReserva(ReservasEntity reservaAModificar, RequestModificarReserva requestReserva)
 	{
