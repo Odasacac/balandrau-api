@@ -1,5 +1,7 @@
 package CCASolutions.BalandrauAPI.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +16,6 @@ public interface RegimenComidasDAO extends JpaRepository <RegimenComidasEntity, 
 	@Transactional
 	@Query("DELETE FROM RegimenComidasEntity r WHERE r.reserva.id = :reservaId")
 	public abstract void deleteByReservaId(@Param ("reservaId") Long reservaId);
+	
+	public abstract List<RegimenComidasEntity> findByReservaIdOrderByFechaDesc(Long reservaId);
 }
