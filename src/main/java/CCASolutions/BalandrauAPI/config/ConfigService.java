@@ -197,7 +197,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 			DatosEntity dato5 = crearDato(descuentoPicnicString, "2");
 			listaDatos.add(dato5);
 			
-			DatosEntity dato6 = crearDato(permisoAdminString, "admin1234");
+			DatosEntity dato6 = crearDato(permisoAdminString, this.clientesService.encriptarPassword("admin1234"));
 			listaDatos.add(dato6);	
 				
 			datosDao.saveAll(listaDatos);
