@@ -208,7 +208,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 		}
 		else
 		{
-			Optional <HabitacionesEntity> habitacionComunitariaoptional =this.habitacionesDao.findById(this.habitacionesDao.getHabitacionComunitariaId());
+			Optional <HabitacionesEntity> habitacionComunitariaoptional =this.habitacionesDao.findById(this.habitacionesDao.getHabitacionComunitariaId(tipoHabitacionComunitaria));
 			
 			if(habitacionComunitariaoptional.isPresent())
 			{

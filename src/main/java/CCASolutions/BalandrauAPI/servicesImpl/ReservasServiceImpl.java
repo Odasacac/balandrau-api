@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
@@ -47,6 +48,9 @@ public class ReservasServiceImpl implements ReservasService
 	
 	@Autowired
 	private HabitacionesService habitacionesService;
+	
+	@Value("${tipoHabitacionComunitaria}") 
+	private int tipoHabitacionComunitaria;
 	
 	
 	public List<GetReservasDTO> getReservasByClienteId (Long clienteId)
@@ -299,7 +303,7 @@ public class ReservasServiceImpl implements ReservasService
 	{
 		boolean esPosible = false;
 		
-		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
+		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId(tipoHabitacionComunitaria);
 		
 		if(reservaAModificar.getHabitacion().getId().equals(habitacionComunitariaId))
 		{
