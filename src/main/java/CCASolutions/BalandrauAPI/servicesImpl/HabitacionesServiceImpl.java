@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import CCASolutions.BalandrauAPI.dao.DatosDAO;
@@ -30,6 +31,9 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	
 	@Autowired
 	private DatosDAO datosDao;
+	
+	@Value("${tipoHabitacionComunitaria}") 
+	private int tipoHabitacionComunitaria;
 	
 	public List<HabitacionesDTO> getHabitacionesDisponiblesPorFechaYHuespedes(RequestHabitacionesDTO requestHabitaciones)
 	{
@@ -60,7 +64,7 @@ public class HabitacionesServiceImpl implements HabitacionesService
 	public boolean habitacionDisponible(RequestHabitacion requestHabitacion)
 	{		
 		boolean habitacionDisponible = false;
-		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId();
+		Long habitacionComunitariaId = this.habitacionesDao.getHabitacionComunitariaId(tipoHabitacionComunitaria);
 		
 		if(requestHabitacion.habitacionId() == habitacionComunitariaId)
 		{
