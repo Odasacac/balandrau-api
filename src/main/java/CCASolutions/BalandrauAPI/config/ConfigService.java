@@ -58,7 +58,10 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	private String descuentoCampistaString;
 	
 	@Value("${permisoAdminString}") 
-	private String permisoAdminString;	
+	private String permisoAdminString;
+	
+	@Value("${tipoHabitacionComunitaria}") 
+	private int tipoHabitacionComunitaria;
 
 	@Override
 	public void run(String... args) throws Exception 
@@ -144,7 +147,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		{
 			List<HabitacionesEntity> listaHabitaciones = new ArrayList<>();			
 				
-			HabitacionesEntity habitacion1 = crearHabitacion("Habitación comunitaria", "Habitacion comunitaria con baño compartido", 101, 8, 15.00, 1);
+			HabitacionesEntity habitacion1 = crearHabitacion("Habitación comunitaria", "Habitacion comunitaria con baño compartido", 101, 8, 15.00, tipoHabitacionComunitaria);
 			listaHabitaciones.add(habitacion1);
 
 			HabitacionesEntity habitacion2 = crearHabitacion("Habitación privada con orientacion norte", "Habitación para cuatro personas con baño incluido", 201, 4, 100.00, 2);
