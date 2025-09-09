@@ -33,7 +33,7 @@ public class ConfigController
 		HttpStatus status = HttpStatus.OK;
 		String body = new String();
 		
-		String permisoAdminBBDD = this.datosDao.getPermisoAdmin(permisoAdminString);
+		String permisoAdminBBDD = this.datosDao.getDatoConcreto(permisoAdminString);
 		
 		if(permisoAdminBBDD.equals(permisoAdminRecibido))
 		{

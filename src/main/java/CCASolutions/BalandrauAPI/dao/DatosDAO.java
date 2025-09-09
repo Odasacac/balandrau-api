@@ -16,6 +16,6 @@ public interface DatosDAO extends JpaRepository <DatosEntity, Long>
 	@Query("SELECT d FROM DatosEntity d WHERE d.concepto IN(:conceptos)")
 	public abstract List<DatosEntity> getPreciosRegimen(@Param("conceptos") List<String> conceptos);
 	
-	@Query("SELECT d.valor FROM DatosEntity d WHERE d.concepto = :permisoAdmin")
-	public abstract String getPermisoAdmin(@Param("permisoAdmin") String permisoRecibido);
+	@Query("SELECT d.valor FROM DatosEntity d WHERE d.concepto = :concepto")
+	public abstract String getDatoConcreto(@Param("concepto") String concepto);
 }

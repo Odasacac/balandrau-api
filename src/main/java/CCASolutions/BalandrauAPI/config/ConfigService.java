@@ -62,6 +62,9 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	
 	@Value("${tipoHabitacionComunitaria}") 
 	private int tipoHabitacionComunitaria;
+	
+	@Value("${maximoTiempoEnHistoricoEnMesesString}") 
+	private String maximoTiempoEnHistoricoEnMesesString;
 
 	@Override
 	public void run(String... args) throws Exception 
@@ -93,7 +96,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		return restablecida;
 	}		
 	
-	public boolean vaciarTodasLasEntidades()
+	private boolean vaciarTodasLasEntidades()
 	{
 		boolean entidadesVacias = false;		
 		
@@ -121,7 +124,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		return entidadesVacias;
 	}
 	
-	public boolean cargarDatosIniciales()
+	private boolean cargarDatosIniciales()
 	{
 		boolean datosInicialesCargados = false;
 		
@@ -199,6 +202,9 @@ public class ConfigService implements IConfigService, CommandLineRunner
 			
 			DatosEntity dato6 = crearDato(permisoAdminString, this.clientesService.encriptarPassword("admin1234"));
 			listaDatos.add(dato6);	
+			
+			DatosEntity dato7 = crearDato(maximoTiempoEnHistoricoEnMesesString, "3");
+			listaDatos.add(dato7);	
 				
 			datosDao.saveAll(listaDatos);
 			datosCargados=true;
