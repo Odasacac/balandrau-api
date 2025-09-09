@@ -41,14 +41,14 @@ public class HistoricoReservasServiceImpl implements HistoricoReservasService
 	@Autowired
 	private DatosDAO datosDao;
 	
-	@Value("${maximoTiempoEnHistoricoEnMesesString}") 
-	private String maximoTiempoEnHistoricoEnMesesString;
+	@Value("${mesesMaximosEnHistoricoString}") 
+	private String mesesMaximosEnHistoricoString;
 	
 	@Scheduled(cron = "0 0 0 * * ?")
 	@Transactional
 	public void limpiarHistorico()
 	{
-		int mesesMaximoEnHistorico = Integer.parseInt(this.datosDao.getDatoConcreto(maximoTiempoEnHistoricoEnMesesString));
+		int mesesMaximoEnHistorico = Integer.parseInt(this.datosDao.getDatoConcreto(mesesMaximosEnHistoricoString));
 		LocalDate fechaLimite = LocalDate.now().minusMonths(mesesMaximoEnHistorico);
 		
 		List<HistoricoReservasEntity> historicoReservasABorrar = new ArrayList<>();

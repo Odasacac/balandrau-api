@@ -63,8 +63,8 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	@Value("${tipoHabitacionComunitaria}") 
 	private int tipoHabitacionComunitaria;
 	
-	@Value("${maximoTiempoEnHistoricoEnMesesString}") 
-	private String maximoTiempoEnHistoricoEnMesesString;
+	@Value("${mesesMaximosEnHistoricoString}") 
+	private String mesesMaximosEnHistoricoString;
 
 	@Override
 	public void run(String... args) throws Exception 
@@ -203,7 +203,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 			DatosEntity dato6 = crearDato(permisoAdminString, this.clientesService.encriptarPassword("admin1234"));
 			listaDatos.add(dato6);	
 			
-			DatosEntity dato7 = crearDato(maximoTiempoEnHistoricoEnMesesString, "3");
+			DatosEntity dato7 = crearDato(mesesMaximosEnHistoricoString, "3");
 			listaDatos.add(dato7);	
 				
 			datosDao.saveAll(listaDatos);
