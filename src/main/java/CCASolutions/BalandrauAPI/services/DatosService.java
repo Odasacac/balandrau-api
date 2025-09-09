@@ -7,4 +7,6 @@ import CCASolutions.BalandrauAPI.dtos.DatosEntityDTO;
 public interface DatosService 
 {
 	public abstract List<DatosEntityDTO> getPreciosRegimen();
+	
+	public abstract List<DatosEntityDTO> getDatosIniciales();
 }

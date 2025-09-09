@@ -20,7 +20,21 @@ public class DatosEntity implements Serializable
 	
 	private String concepto;
 	private String valor;
+	private boolean inicial;
 	
+	
+	
+	
+	public boolean isInicial() 
+	{
+		return inicial;
+	}
+
+	public void setInicial(boolean inicial) 
+	{
+		this.inicial = inicial;
+	}
+
 	public Long getId() 
 	{
 		return id;

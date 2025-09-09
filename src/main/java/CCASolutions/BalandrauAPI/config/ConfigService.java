@@ -64,7 +64,10 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	private int tipoHabitacionComunitaria;
 	
 	@Value("${mesesMaximosEnHistoricoString}") 
-	private String mesesMaximosEnHistoricoString;
+	private String mesesMaximosEnHistoricoString;	
+	
+	@Value("${urlPPDDString}") 
+	private String urlPPDDString;
 
 	@Override
 	public void run(String... args) throws Exception 
@@ -185,26 +188,29 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		{
 			List<DatosEntity> listaDatos = new ArrayList<>();
 				
-			DatosEntity dato1 = crearDato(precioDesayunoString, "7");
+			DatosEntity dato1 = crearDato(precioDesayunoString, "7", false);
 			listaDatos.add(dato1);
 
-			DatosEntity dato2 = crearDato(precioComidaString, "10");
+			DatosEntity dato2 = crearDato(precioComidaString, "10", false);
 			listaDatos.add(dato2);
 
-			DatosEntity dato3 = crearDato(precioCenaString, "8");
+			DatosEntity dato3 = crearDato(precioCenaString, "8", false);
 			listaDatos.add(dato3);
 				
-			DatosEntity dato4 = crearDato(descuentoCampistaString, "20");
+			DatosEntity dato4 = crearDato(descuentoCampistaString, "20", false);
 			listaDatos.add(dato4);
 
-			DatosEntity dato5 = crearDato(descuentoPicnicString, "2");
+			DatosEntity dato5 = crearDato(descuentoPicnicString, "2", false);
 			listaDatos.add(dato5);
 			
-			DatosEntity dato6 = crearDato(permisoAdminString, this.clientesService.encriptarPassword("admin1234"));
+			DatosEntity dato6 = crearDato(permisoAdminString, this.clientesService.encriptarPassword("admin1234"), false);
 			listaDatos.add(dato6);	
 			
-			DatosEntity dato7 = crearDato(mesesMaximosEnHistoricoString, "3");
+			DatosEntity dato7 = crearDato(mesesMaximosEnHistoricoString, "3", false);
 			listaDatos.add(dato7);	
+			
+			DatosEntity dato8 = crearDato(urlPPDDString, "https://www.urlPPDD.com", true);
+			listaDatos.add(dato8);					
 				
 			datosDao.saveAll(listaDatos);
 			datosCargados=true;
@@ -280,11 +286,12 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		return cliente;
 	}
 
-	private DatosEntity crearDato(String concepto, String valor) 
+	private DatosEntity crearDato(String concepto, String valor, boolean inicial) 
 	{
 		DatosEntity dato = new DatosEntity();
 		dato.setConcepto(concepto);
 		dato.setValor(valor);
+		dato.setInicial(inicial);
 		return dato;
 	}
 

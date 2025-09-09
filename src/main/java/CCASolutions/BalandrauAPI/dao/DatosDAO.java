@@ -10,11 +10,14 @@ import CCASolutions.BalandrauAPI.entities.DatosEntity;
 
 public interface DatosDAO extends JpaRepository <DatosEntity, Long>
 {
+	@Query("SELECT d FROM DatosEntity d WHERE inicial = TRUE")
+	public abstract List<DatosEntity> getDatosIniciales();
+	
 	@Query("SELECT d.valor FROM DatosEntity d WHERE d.concepto = 'descuentoCampista'")
 	public abstract int getPorCientoDeDescuentoPorCampista();
 	
 	@Query("SELECT d FROM DatosEntity d WHERE d.concepto IN(:conceptos)")
-	public abstract List<DatosEntity> getPreciosRegimen(@Param("conceptos") List<String> conceptos);
+	public abstract List<DatosEntity> getDatosPorConceptos(@Param("conceptos") List<String> conceptos);
 	
 	@Query("SELECT d.valor FROM DatosEntity d WHERE d.concepto = :concepto")
 	public abstract String getDatoConcreto(@Param("concepto") String concepto);

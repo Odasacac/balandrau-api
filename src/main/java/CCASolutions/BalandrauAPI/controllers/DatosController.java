@@ -21,6 +21,24 @@ public class DatosController
 {
 	@Autowired
 	private DatosService datosService;
+	
+	@GetMapping("/iniciales")
+	public ResponseEntity<List<DatosEntityDTO>> getDatosIniciales()
+	{
+		HttpStatus status = HttpStatus.OK;
+		List<DatosEntityDTO> body = new ArrayList<DatosEntityDTO>();
+		
+		try
+		{
+			body = this.datosService.getDatosIniciales();
+		}
+		catch (Exception e)
+		{
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		
+		return new ResponseEntity<List<DatosEntityDTO>> (body, status);
+	}
 
 	@GetMapping("/preciosRegimen")
 	public ResponseEntity<List<DatosEntityDTO>> getPreciosRegimen()

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,9 +34,11 @@ public class ConfigController
 		HttpStatus status = HttpStatus.OK;
 		String body = new String();
 		
-		String permisoAdminBBDD = this.datosDao.getDatoConcreto(permisoAdminString);
+		String permisoAdminBBDDHash = this.datosDao.getDatoConcreto(permisoAdminString);
 		
-		if(permisoAdminBBDD.equals(permisoAdminRecibido))
+		boolean coincidenPasswords = verificarPassword(permisoAdminRecibido, permisoAdminBBDDHash);
+		
+		if(coincidenPasswords)
 		{
 			try
 			{
@@ -58,11 +61,20 @@ public class ConfigController
 		else
 		{
 			status = HttpStatus.BAD_REQUEST;
-			body = new String("No tiene permisos para realizar esta accion");
+			body = new String("No tiene permisos para realizar esta accion.");
 		}		
 		
 	
 		
 		return new ResponseEntity<String>(body, status);
+	}
+	
+	private boolean verificarPassword (String contrasenyaIngresada, String hashAlmacenado)
+	{
+		
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+		return encoder.matches(contrasenyaIngresada, hashAlmacenado);
+
 	}
 }

@@ -11,7 +11,6 @@ import CCASolutions.BalandrauAPI.dao.DatosDAO;
 import CCASolutions.BalandrauAPI.dtos.DatosEntityDTO;
 import CCASolutions.BalandrauAPI.entities.DatosEntity;
 import CCASolutions.BalandrauAPI.services.DatosService;
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class DatosServiceImpl implements DatosService 
@@ -31,23 +30,20 @@ public class DatosServiceImpl implements DatosService
 	@Value("${descuentoPicnicString}") 
 	private String descuentoPicnicString;
 	
-	private List<String> conceptos = new ArrayList<>();
 	
-	 @PostConstruct
-	 public void initConceptos()
-	 {
-		this.conceptos.add(precioDesayunoString);
-		this.conceptos.add(precioComidaString);
-		this.conceptos.add(precioCenaString);
-		this.conceptos.add(descuentoPicnicString);
-	}
+	private List<String> conceptos = new ArrayList<>();
 	
 	public List<DatosEntityDTO> getPreciosRegimen()
 	{
 		List<DatosEntityDTO> preciosRegimen = new ArrayList<DatosEntityDTO>();
-
 		
-		List<DatosEntity> preciosRegimenObject = this.datosDao.getPreciosRegimen(conceptos);
+		conceptos = new ArrayList<>();
+		this.conceptos.add(precioDesayunoString);
+		this.conceptos.add(precioComidaString);
+		this.conceptos.add(precioCenaString);
+		this.conceptos.add(descuentoPicnicString);
+		
+		List<DatosEntity> preciosRegimenObject = this.datosDao.getDatosPorConceptos(conceptos);
 		
 		for (int i = 0; i<preciosRegimenObject.size(); i++)
 		{
@@ -59,5 +55,24 @@ public class DatosServiceImpl implements DatosService
 		}
 
 		return preciosRegimen;
+	}
+	
+	public List<DatosEntityDTO> getDatosIniciales()
+	{
+		List<DatosEntityDTO> datosIniciales = new ArrayList<DatosEntityDTO>();
+
+		
+		List<DatosEntity> datosInicialesObject = this.datosDao.getDatosIniciales();
+		
+		for (int i = 0; i<datosInicialesObject.size(); i++)
+		{
+			DatosEntity datos = datosInicialesObject.get(i);
+			DatosEntityDTO precioRegimen = new DatosEntityDTO(datos.getConcepto(), datos.getValor());
+			
+			datosIniciales.add(precioRegimen);
+			
+		}
+
+		return datosIniciales;
 	}
 }
