@@ -65,9 +65,6 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	
 	@Value("${mesesMaximosEnHistoricoString}") 
 	private String mesesMaximosEnHistoricoString;	
-	
-	@Value("${urlPPDDString}") 
-	private String urlPPDDString;
 
 	@Override
 	public void run(String... args) throws Exception 
@@ -207,10 +204,7 @@ public class ConfigService implements IConfigService, CommandLineRunner
 			listaDatos.add(dato6);	
 			
 			DatosEntity dato7 = crearDato(mesesMaximosEnHistoricoString, "3", false);
-			listaDatos.add(dato7);	
-			
-			DatosEntity dato8 = crearDato(urlPPDDString, "https://www.urlPPDD.com", true);
-			listaDatos.add(dato8);					
+			listaDatos.add(dato7);						
 				
 			datosDao.saveAll(listaDatos);
 			datosCargados=true;

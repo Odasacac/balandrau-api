@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import CCASolutions.BalandrauAPI.dao.DatosDAO;
+import CCASolutions.BalandrauAPI.services.ClientesService;
 
 @RestController
 @RequestMapping("/config")
@@ -25,6 +26,9 @@ public class ConfigController
 	@Autowired
 	private DatosDAO datosDao;
 	
+	@Autowired
+	private ClientesService clientesService;
+	
 	@Value("${permisoAdminString}") 
 	private String permisoAdminString;
 	
@@ -36,7 +40,7 @@ public class ConfigController
 		
 		String permisoAdminBBDDHash = this.datosDao.getDatoConcreto(permisoAdminString);
 		
-		boolean coincidenPasswords = verificarPassword(permisoAdminRecibido, permisoAdminBBDDHash);
+		boolean coincidenPasswords = this.clientesService.verificarPassword(permisoAdminRecibido, permisoAdminBBDDHash);
 		
 		if(coincidenPasswords)
 		{
@@ -69,12 +73,4 @@ public class ConfigController
 		return new ResponseEntity<String>(body, status);
 	}
 	
-	private boolean verificarPassword (String contrasenyaIngresada, String hashAlmacenado)
-	{
-		
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-		return encoder.matches(contrasenyaIngresada, hashAlmacenado);
-
-	}
 }
