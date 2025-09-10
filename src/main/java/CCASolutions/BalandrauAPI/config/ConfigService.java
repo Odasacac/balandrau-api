@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import CCASolutions.BalandrauAPI.dao.ClientesDAO;
 import CCASolutions.BalandrauAPI.dao.DatosDAO;
 import CCASolutions.BalandrauAPI.dao.HabitacionesDAO;
+import CCASolutions.BalandrauAPI.dao.HistoricoRegimenComidasDAO;
+import CCASolutions.BalandrauAPI.dao.HistoricoReservasDAO;
 import CCASolutions.BalandrauAPI.dao.RegimenComidasDAO;
 import CCASolutions.BalandrauAPI.dao.ReservasDAO;
 import CCASolutions.BalandrauAPI.entities.ClientesEntity;
@@ -41,6 +43,12 @@ public class ConfigService implements IConfigService, CommandLineRunner
 	
 	@Autowired
 	private ClientesService clientesService;
+	
+	@Autowired
+	private HistoricoRegimenComidasDAO historicoRegimenComidasDao;
+	
+	@Autowired
+	private HistoricoReservasDAO historicoReservasDao;
 	
 	@Value("${precioDesayunoString}") 
 	private String precioDesayunoString;
@@ -107,6 +115,9 @@ public class ConfigService implements IConfigService, CommandLineRunner
 
 			habitacionesDao.deleteAll();
 			clientesDao.deleteAll();
+			
+			historicoRegimenComidasDao.deleteAll();
+			historicoReservasDao.deleteAll();
 			
 			datosDao.deleteAll();			
 		}
@@ -243,6 +254,16 @@ public class ConfigService implements IConfigService, CommandLineRunner
 		}
 		
 		if (clientesDao.count() != 0)
+		{
+			hayDatos=true;
+		}
+		
+		if(historicoReservasDao.count() != 0)
+		{
+			hayDatos=true;
+		}
+		
+		if(historicoRegimenComidasDao.count() != 0)
 		{
 			hayDatos=true;
 		}
